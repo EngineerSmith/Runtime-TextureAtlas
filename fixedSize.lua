@@ -106,7 +106,7 @@ fixedSizeTA.getDrawFunc = function(self)
 end
 
 -- If you don't want to bother passing around ids
-fixedSizeTA.getDrawFuncFromID = function(self, id)
+fixedSizeTA.getDrawFuncForID = function(self, id)
     return function(...)
         lg.draw(self.image, self.quads[id], ...)
     end

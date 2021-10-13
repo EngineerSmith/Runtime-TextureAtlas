@@ -1,7 +1,7 @@
 # Love2D-TA
 Love2D runtime texture atlas
 
-At this point in time this texture atlas only supports fixed sized images. (images that are all the same in width and height. Width and height can be different values e.g. 16x32)
+At this point in time this texture atlas only supports fixed sized images (Images that are all the same in width and height. Width and height can be different values e.g. 16x32)
 
 ## Docs
 
@@ -9,11 +9,11 @@ Clone into your lib/include file for your love2d project,
 E.g. `git clone https://github.com/EngineerSmith/Love2D-TA libs/TA`
 
 ```lua
--- Require library
+-- Require library from cloned location
 local textureAtlas = require("libs.TA")
 
 -- Create atlas to add images to
-local ta = textureAtlas.newFixedSize(16,16,1)
+local ta = textureAtlas.newFixedSize(16,32,1)
 -- textureAtlas.newFixedSize(width, height = width, padding = 1) -- default values
 
 -- Add or replace an image to the atlas
@@ -25,7 +25,7 @@ ta:add(rabbit, "rabbit", true)
 
 -- Remove an image from the atlas
 ta:remove("rabbit", true)
--- fixedSize:remove(id, bake = false)
+-- fixedSize:remove(id, bake = false) -- default values
 -- It's recommended to call bake here, unless you're removing a lot of images at once from the texture atlas
 
 -- Bake texture atlas
@@ -41,7 +41,7 @@ draw("rabbit", 50,50)
 -- draw(id, ...) -- values after the id are sent as arguments to love.graphics.draw
 
 -- Get a draw function to avoid passing texture atlas and id around
-local draw = ta:getDrawFuncFromID("rabbit")
+local draw = ta:getDrawFuncForID("rabbit")
 draw(50,50)
 -- draw(...) -- values are sent as arguments to love.graphics.draw
 ```
