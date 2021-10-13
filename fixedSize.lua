@@ -1,4 +1,8 @@
-local fixedSizeTA = {}
+local fixedSizeTA = {
+    _canvasSettings = {
+        dpiscale = 1,
+    }
+}
 fixedSizeTA.__index = fixedSizeTA
 
 local lg = love.graphics
@@ -6,28 +10,30 @@ local ceil, sqrt = math.ceil, math.sqrt
 
 fixedSizeTA.new = function(width, height, padding)
     return setmetatable({
-        width = width,
+        width = width or error("Width required"),
         height = height or width,
-        padding = padding or 2,
-        image = nil, -- Created in fixedSizeTA.bake
+        padding = padding or 1,
+        image,
         images = {},
         imagesSize = 0,
         ids = {},
         quads = {},
-        _dirty = false,
+        _dirty = false, -- Marked dirty if image is added or removed
     }, fixedSizeTA)
 end
 
-fixedSizeTA.add = function(self, image, id)
+-- TA:add(img, "foo")
+-- TA:add(img, 68513)
+fixedSizeTA.add = function(self, image, id, bake)
     local width, height = image:getDimensions()
     if width ~= self.width or height ~= self.height then
         error("Given image cannot fit into a fixed sized texture atlas\n Gave: W:".. width .. " H:" ..height .. ", Expected: W:"..self.width.." H:"..self.height)
     end
     
-    self:remove(id)
-    
     self.imagesSize = self.imagesSize + 1
     local index = self.imagesSize
+    assert(type(id) ~= "nil", "Must give an id")
+    self:remove(id)
     self.images[index] = {
         image = image,
         id = id,
@@ -35,19 +41,25 @@ fixedSizeTA.add = function(self, image, id)
     self.ids[id] = index
     
     self._dirty = true
+    if bake then
+        self:bake()
+    end
     
     return self
 end
 
-fixedSizeTA.remove = function(self, id)
+-- TA:remove("foo")
+-- TA:remove(68513)
+fixedSizeTA.remove = function(self, id, bake)
     local index = self.ids[id]
-    
     if index then
         self.images[index] = nil
         self.quads[id] = nil
         self.ids[id] = nil
-        
         self._dirty = true
+        if bake == true then
+            self:bake()
+        end
     end
     
     return self
@@ -55,23 +67,29 @@ end
 
 fixedSizeTA.bake = function(self)
     if self._dirty then
-        lg.push("all")
         local size = ceil(sqrt(#self.images))
-        local width, height, padding = self.width + self.padding, self.height + self.padding
-        local canvas = lg.newCanvas(size * width, size * height)
+        local width, height = self.width, self.height
+        local widthPadded, heightPadded = width + self.padding, height + self.padding
+        local widthCanvas, heightCanvas = size * widthPadded, size * heightPadded
+        local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
+        local maxIndex = self.imagesSize
+        lg.push("all")
         lg.setCanvas(canvas)
         for x=0, size-1, 1 do
             for y=0, size-1, 1 do
-                local image = self.images[(x+y*size)+1]
-                if image then
-                    lg.draw(image.image, x*width, y*height)
-                    self.quads[image.id] = lg.newQuad(x*width, y*height, self.width, self.height, size*width,size*height)
+                local index = (x+y*size)+1
+                if index > maxIndex then
+                    break
                 end
+                local x, y = x*widthPadded, y*heightPadded
+                local image = self.images[index]
+                lg.draw(image.image, x, y)
+                self.quads[image.id] = lg.newQuad(x, y, width, height, widthCanvas, heightCanvas)
             end
         end
         lg.pop()
-        self.image = lg.newImage(canvas:newImageData(0,1,0,0,size*width,size*height))
-        --error(self.image:getWidth()..":"..self.image:getHeight().." from "..canvas:getWidth()..":"..canvas:getHeight().."\nA factor of: W:"..self.image:getWidth()/canvas:getWidth().." H:"..self.image:getHeight()/canvas:getHeight())
+        self.image = lg.newImage(canvas:newImageData())
+        self._dirty = false
     end
     
     return self
