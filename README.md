@@ -3,6 +3,29 @@ Love2D runtime texture atlas
 
 At this point in time this texture atlas only supports fixed sized images (Images that are all the same in width and height. Width and height can be different values e.g. 16x32)
 
+## Example
+
+```lua
+local textureAtlas = require("libs.TA")
+local ta = textureAtlas.newFixedSize(16)
+
+ta:add(love.graphics.newImage("duck.png"), "duck")
+ta:add(love.graphics.newImage("cat.png"), "cat")
+ta:add(love.graphics.newImage("dog.png"), "dog")
+ta:add(love.graphics.newImage("rabbit.png"), "rabbit")
+ta:bake()
+
+ta:remove("dog")
+ta:remove("rabbit", true) -- Remove rabbit and bake changes
+
+local catDraw = ta:getDrawFuncForID("cat")
+
+love.draw = function()
+    ta:draw("duck", 50,50)
+    catDraw(50,50, 0)
+end
+```
+
 ## Docs
 
 Clone into your lib/include file for your love2d project,
@@ -20,16 +43,18 @@ local ta = textureAtlas.newFixedSize(16,32,1)
 local rabbit = love.graphics.newImage("rabbit.png")
 ta:add(rabbit, "rabbit", true)
 -- fixedSize:add(image, id, bake = false) -- default values
--- By marking the function to bake (last argument), you avoid having to call bake manually - but it is recommended only to call bake once all images have been added. Only mark true if you only wanted to update a single image
+-- You can use the last argument to bake without having to call bake afterward - it is recommended only to bake once all changes have been made. Useful for updating one image
 -- Note, id can be any normal table index - not limited to strings
 
 -- Remove an image from the atlas
 ta:remove("rabbit", true)
 -- fixedSize:remove(id, bake = false) -- default values
--- It's recommended to call bake here, unless you're removing a lot of images at once from the texture atlas
+-- You can use the last argument to bake without having to call bake afterward - it is recommended only to bake once all changes have been made. Useful for updating one image
 
 -- Bake texture atlas
 ta:bake()
+-- Ensure bake has been called via add, remove, or this function; otherwise, you can't draw from the texture atlas.
+-- Bake checks if there have been changes when called to avoid needlessly 'rebaking'
 
 -- Draw the image from the texture atlas
 ta:draw("rabbit", 50,50)
