@@ -18,7 +18,9 @@ fixedSizeTA.new = function(width, height, padding)
         imagesSize = 0,
         ids = {},
         quads = {},
-        _dirty = false, -- Marked dirty if image is added or removed
+        filterMin = "linear", 
+        filterMag = "linear",
+        _dirty = false, -- Marked dirty if image is added or removed,
     }, fixedSizeTA)
 end
 
@@ -89,8 +91,16 @@ fixedSizeTA.bake = function(self)
         end
         lg.pop()
         self.image = lg.newImage(canvas:newImageData())
+        self.image:setFilter(self.filterMin, self.filterMag)
         self._dirty = false
     end
+    
+    return self
+end
+
+fixedSizeTA.setFilter = function(self, min, mag)
+    self.filterMin = min or "linear"
+    self.filterMag = mag or self.filterMin
     
     return self
 end

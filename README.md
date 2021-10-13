@@ -8,6 +8,7 @@ At this point in time this texture atlas only supports fixed sized images (Image
 ```lua
 local textureAtlas = require("libs.TA")
 local ta = textureAtlas.newFixedSize(16)
+ta:setFilter("nearest")
 
 ta:add(love.graphics.newImage("duck.png"), "duck")
 ta:add(love.graphics.newImage("cat.png"), "cat")
@@ -38,6 +39,10 @@ local textureAtlas = require("libs.TA")
 -- Create atlas to add images to
 local ta = textureAtlas.newFixedSize(16,32,1)
 -- textureAtlas.newFixedSize(width, height = width, padding = 1) -- default values
+
+-- Set filter mode for texture atlas
+ta:setFilter("nearest")
+-- fixedSize:setFilter(min = "linear", mag = min) -- default values
 
 -- Add or replace an image to the atlas
 local rabbit = love.graphics.newImage("rabbit.png")
