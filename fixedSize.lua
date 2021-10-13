@@ -99,8 +99,14 @@ fixedSizeTA.draw = function(self, id, ...)
     lg.draw(self.image, self.quads[id], ...)
 end
 
+fixedSizeTA.getDrawFunc = function(self)
+    return function(...)
+        self:draw(...)
+    end
+end
+
 -- If you don't want to bother passing around ids
-fixedSizeTA.getDrawFunc = function(self, id)
+fixedSizeTA.getDrawFuncFromID = function(self, id)
     return function(...)
         lg.draw(self.image, self.quads[id], ...)
     end

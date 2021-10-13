@@ -1,3 +1,5 @@
-local textureAtlas = require(... .. ".fixedSize")
+local textureAtlas = {
+    newFixedSize = require(... .. ".fixedSize").new
+}
 
 return textureAtlas
