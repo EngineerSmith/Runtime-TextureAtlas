@@ -59,8 +59,9 @@ end
 
 treeNode.draw = function(self, quads, width, height)
     if self.image then
-        lg.draw(self.image.image, self.x, self.y)
-        quads[self.image.id] = lg.newQuad(self.x, self.y, self.image.image:getDimensions(), width, height)
+        local img = self.image.image
+        lg.draw(img, self.x, self.y)
+        quads[self.image.id] = lg.newQuad(self.x, self.y, img:getWidth(), img:getHeight(), width, height)
     elseif self[1] --[[ and self[2] ]] then 
         self[1]:draw(quads, width, height)
         self[2]:draw(quads, width, height)
