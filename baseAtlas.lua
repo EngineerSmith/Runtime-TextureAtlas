@@ -1,3 +1,6 @@
+-- Copyright (c) 2021 EngineerSmith
+-- Under the MIT license, see license suppiled with this file
+
 local baseAtlas = {
     _canvasSettings = {
         dpiscale = 1,

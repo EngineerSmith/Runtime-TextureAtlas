@@ -1,5 +1,7 @@
+-- Copyright (c) 2021 EngineerSmith
+-- Under the MIT license, see license suppiled with this file
 
--- Based on BlackPawn's lightmap packing: https://blackpawn.com/texts/lightmaps/default.html
+-- Based on BlackPawn's lightmap packing algorithm: https://blackpawn.com/texts/lightmaps/default.html
 local treeNode = {}
 treeNode.__index = treeNode
 
@@ -33,21 +35,25 @@ treeNode.insert = function(self, image, width, height)
         self[1] = self.new()
         self[2] = self.new()
         
-        if (self.w - width) > (self.h - height) then -- Vertical split 
-            self[1].x = self.x -- Left
+        if (self.w - width) > (self.h - height) then -- Vertical 
+             -- Left
+            self[1].x = self.x
             self[1].y = self.y
             self[1].w = width
             self[1].h = self.h
-            self[2].x = self.x + width -- Right
+            -- Right
+            self[2].x = self.x + width
             self[2].y = self.y
             self[2].w = self.w - width
             self[2].h = self.h
-        else -- Horizontal split
-            self[1].x = self.x -- Up
+        else -- Horizontal
+            -- Up
+            self[1].x = self.x
             self[1].y = self.y
             self[1].w = self.w
             self[1].h = height
-            self[2].x = self.x -- Down
+            -- Down
+            self[2].x = self.x
             self[2].y = self.y + height
             self[2].w = self.w
             self[2].h = self.h - height
