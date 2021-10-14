@@ -1,13 +1,13 @@
 # ES's Runtime Texture Atlas
-A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on __love 11.3 android__.
+A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on **love 11.3 android**.
 
 There are two types of Texture atlas you have access to:
 
-**Fixed Size**: __All images must have the same width and height__ (e.g. 16x16, 512x64, etc.)
+**Fixed Size**: *All images must have the same width and height*
 
   Uses homebrew algorithm to pack images. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of columns, then optimizes number of rows. (e.g. ceil(sqrt(50))=8, instead of an 8x8= grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row)
 
-**Dynamic Size**: __All images can be whatever size they want__
+**Dynamic Size**: *All images can be whatever size they want*
 
   Unit tests shows it takes 90%-150% longer to bake than fixed size. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
 ## Examples
