@@ -66,7 +66,8 @@ love.draw = function()
 end
 ```
 ## Docs
-Clone into your lib/include file for your love2d project,
+Clone into your lib/include file for your love2d project.
+
 E.g. `git clone https://github.com/EngineerSmith/Love2D-TA libs/TA`
 ### require
 Require the library using the init.lua
@@ -74,9 +75,11 @@ Require the library using the init.lua
 local textureAtlas = require("libs.TA") -- the location where it has been cloned to
 ```
 ### textureAtlas.new
-Create an atlas to add images to
-  Fixed Size atlas require all added images to have the same width and height
-  Dynamic Size atlas allows more freedom for size of image
+Create an atlas to add images too:
+
+- Fixed Size atlas require all added images to have the same width and height
+- Dynamic Size atlas allows for any size of image
+
 ```lua
 local fs = textureAtlas.newFixedSize(width, height = width, padding = 1)
 local ds = textureAtlas.newDynamicSize(padding = 1)
@@ -95,19 +98,28 @@ ta:setFilter("nearest")
 ```
 ### textureAtlas:add(image, id, bake = false, ...)
 Add or replace an image to your atlas. Use the 3rd argument to bake the addition. Recommended to only bake once all changes have been made - useful for updating one image. 4th argument is passed to `textureAtlas.bake`
+
 **Note, id can be any normal table index variable type - not limited to strings**
 ```lua
 ta:add(image, id, bake = false, ...)
-ta:add(love.graphics.newImage("rabbit.png"), "rabbit")
+ta:add(love.graphics.newImage("duck.png"), "duck")
 
 fixed:add(love.graphics.newImage("duck.png"), true)
 dynamic:add(love.graphics.newImage("duck.png"), true, "height") -- option to add in sorting algorithm
 ```
 ### textureAtlas:remove(id, bake = false, ...)
 Remove an image added to the atlas. Use the 2nd argument to bake the removal. Recommended to only bake once all changes have been made or if you're only making a single change. 4th argument is passed to `textureAtlas.bake`
+```lua
+ta:remove(id, bake = false, ...)
+ta:remove("duck")
+
+fixed:remove("duck", true)
+dynamic:remove("duck", true, "area")
+```
 ### textureAtlas:bake
 Baking takes all added images and stitches them together onto a single image. Basic check in place to ensure it only bakes when changes have been made via `add` or `remove` to avoid needless baking
-*Note, it's recommended to use `textureAtlas:hardBake` once all changes have been made.*
+
+**Note, it's recommended to use `textureAtlas:hardBake` once all changes have been made.**
 ```lua
 fixed:bake()
 dynamic:bake(sortby)
@@ -118,7 +130,9 @@ dynamic:bake("height")
 ```
 ### textureAtlas:hardBake
 Hard baking the image and removes references to all given images. Once called, you cannot add, remove or bake again. This function is designed to free up unused memory.
+
 **Note, any references to images that still exist outside of textureAtlas will keep the image alive (`image:release` is not called)**
+
 Call `collectgarbage("collect")` after `textureAtlas:hardBake` if you want to see instant results of cleaning out unused memory, otherwise let lua handle when it wants to collect garbage.
 ```lua
 fixed:hardBake()
