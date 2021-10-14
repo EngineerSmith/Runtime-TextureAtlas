@@ -23,7 +23,7 @@ local catDraw = ta:getDrawFuncForID("cat")
 
 love.draw = function()
     ta:draw("duck", 50,50)
-    catDraw(50,50, 0)
+    catDraw(100,50, 0, 5,5)
 end
 ```
 
