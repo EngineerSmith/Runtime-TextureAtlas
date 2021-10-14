@@ -3,6 +3,7 @@ A Love2D runtime texture atlas designed to be easy to use and memory optimized. 
 
 __**Fixed Size**: All images must have the same width and height (e.g. 16x16, 512x64, etc)__
   Uses homebrew algorithm to pack. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of images on the width, then optimizes number of rows. (e.g., ceil(sqrt(50))=8, instead of an 8x8 grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row)
+
 __**Dynamic Size**: All images can be whatever size they want__
   Unit tests shows it takes 90%-150% longer to bake than fixed size. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
 ## Examples
