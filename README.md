@@ -9,7 +9,7 @@ There are two types of Texture atlas you have access to:
 
 **Dynamic Size**: *All images can be whatever size they want*
 
-  Unit tests shows it takes 90%-150% longer to bake than fixed size. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
+  Unit tests shows it takes 90%-120% longer to bake than fixed size. Which isn't an issue unless you have 1000+ images on one texture atlas, then it will freeze the game loop up. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
 ## Examples
 ### Fixed Size
 All images must be the same size
@@ -18,16 +18,18 @@ local textureAtlas = require("libs.TA")
 local ta = textureAtlas.newFixedSize(16, 32)
 ta:setFilter("nearest")
 
-ta:add(love.graphics.newImage("duck.png"), "duck")
+ta:add(love.graphics.newImage("duck.png"), "duck") -- throws error if images aren't 16x32
 ta:add(love.graphics.newImage("cat.png"), "cat")
 ta:add(love.graphics.newImage("dog.png"), "dog")
 ta:add(love.graphics.newImage("rabbit.png"), "rabbit")
+
 ta:bake()
 
 ta:remove("dog")
 ta:remove("rabbit", true) -- Remove rabbit and bake changes
 
 ta:hardBake() -- Cannot add or remove images after call, and deletes all references to given images so they can be cleaned from memory
+collectgarbage("collect")
 
 local catDraw = ta:getDrawFuncForID("cat")
 
@@ -105,6 +107,7 @@ dynamic:add(love.graphics.newImage("duck.png"), true, "height") -- option to add
 Remove an image added to the atlas. Use the 2nd argument to bake the removal. Recommended to only bake once all changes have been made or if you're only making a single change. 4th argument is passed to `textureAtlas.bake`
 ### textureAtlas:bake
 Baking takes all added images and stitches them together onto a single image. Basic check in place to ensure it only bakes when changes have been made via `add` or `remove` to avoid needless baking
+*Note, it's recommended to use `textureAtlas:hardBake` once all changes have been made.*
 ```lua
 fixed:bake()
 dynamic:bake(sortby)
@@ -114,7 +117,7 @@ dynamic:bake("height")
 -- use dynamic.image to grab the baked image
 ```
 ### textureAtlas:hardBake
-Hard baking bakes the image and removes references to all given images. Once called, you cannot add, remove or bake again. This function is designed to free up unused memory.
+Hard baking the image and removes references to all given images. Once called, you cannot add, remove or bake again. This function is designed to free up unused memory.
 **Note, any references to images that still exist outside of textureAtlas will keep the image alive (`image:release` is not called)**
 Call `collectgarbage("collect")` after `textureAtlas:hardBake` if you want to see instant results of cleaning out unused memory, otherwise let lua handle when it wants to collect garbage.
 ```lua

@@ -18,7 +18,7 @@ baseAtlas.new = function(padding)
         filterMin = "linear", 
         filterMag = "linear",
         _dirty = false, -- Marked dirty if image is added or removed,
-        _hardBake = false, -- Marked true if hardBake has been called, cannot use add or remove
+        _hardBake = false, -- Marked true if hardBake has been called, cannot use add, remove or bake once true
     }, baseAtlas)
 end
 
@@ -69,14 +69,15 @@ end
 
 baseAtlas.bake = function(self)
     error("Warning! Created atlas hasn't overriden bake function!")
+    return self
 end
 
 baseAtlas.hardBake = function(self, ...)
-    local result = self:bake(...)
+    self:bake(...)
     self.images = nil
     self.ids = nil
     self._hardBake = true
-    return result
+    return self
 end
 
 baseAtlas.setFilter = function(self, min, mag)
@@ -95,7 +96,7 @@ end
 -- Following functions are if you don't want to pass textureAtlas or ids around
 
 baseAtlas.getDrawFunc = function(self)
-    return function(...)
+    return function(...) -- uses baseAtlas.draw's args (id, ...)
         self:draw(...)
     end
 end

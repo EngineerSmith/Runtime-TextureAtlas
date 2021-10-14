@@ -23,18 +23,18 @@ end
 
 fixedSizeTA.bake = function(self)
     if self._dirty and not self._hardBake then
-        local size = ceil(sqrt(#self.images))
+        local columns = ceil(sqrt(#self.images))
         local width, height = self.width, self.height
         local widthPadded, heightPadded = width + self.padding, height + self.padding
-        local rows = ceil(#self.images / size)
-        local widthCanvas, heightCanvas = size * widthPadded, rows * heightPadded
+        local rows = ceil(#self.images / columns)
+        local widthCanvas, heightCanvas = columns * widthPadded, rows * heightPadded
         local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
         local maxIndex = self.imagesSize
         lg.push("all")
         lg.setCanvas(canvas)
-        for x=0, size-1, 1 do
-            for y=0, size-1, 1 do
-                local index = (x+y*size)+1
+        for x=0, rows-1, 1 do
+            for y=0, columns-1, 1 do
+                local index = (x+y*columns)+1
                 if index > maxIndex then
                     break
                 end
