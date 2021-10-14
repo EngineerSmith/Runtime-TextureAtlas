@@ -129,7 +129,7 @@ dynamic:bake("height")
 -- use dynamic.image to grab the baked image
 ```
 ### textureAtlas:hardBake
-Hard baking the image and removes references to all given images. Once called, you cannot add, remove or bake again. This function is designed to free up unused memory.
+Hard baking bakes the image(if changes have been made since last bake) and removes all references to all added images. Once called, you cannot add(throws error), remove(throws error) or bake again(no error). This function is designed to free up unused memory.
 
 **Note, any references to images that still exist outside of textureAtlas will keep the image alive (`image:release` is not called)**
 
