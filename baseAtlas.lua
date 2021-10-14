@@ -64,6 +64,10 @@ baseAtlas.bake = function(self)
     error("Warning! Created atlas hasn't overriden bake function!")
 end
 
+baseAtlas.hardBake = function(self)
+    error("Warning! Created atlas hasn't overriden hardBake function!")
+end
+
 baseAtlas.setFilter = function(self, min, mag)
     self.filterMin = min or "linear"
     self.filterMag = mag or self.filterMin

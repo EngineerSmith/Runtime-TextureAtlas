@@ -1,5 +1,5 @@
 # Love2D-TA
-Love2D runtime texture atlas!
+Love2D runtime texture atlas! Tested and written on __love 11.3__ android.
 
 **Fixed Size**: All images must have the same width and height (e.g. 16x16, 512x64, etc)
 **Dynamic Size**: All images can be whatever size they want; however, from unit tests it takes about twice as long to bake the texture using BlackPawn's lightmap packing algorithm (and the default "height" sort option)
