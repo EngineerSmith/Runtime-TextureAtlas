@@ -2,7 +2,7 @@
 Love2D runtime texture atlas! Tested and written on __love 11.3__ android.
 
 **Fixed Size**: All images must have the same width and height (e.g. 16x16, 512x64, etc)
-**Dynamic Size**: All images can be whatever size they want; however, from unit tests it takes about twice as long to bake the texture using BlackPawn's lightmap packing algorithm (and the default "height" sort option)
+**Dynamic Size**: All images can be whatever size they want; however, from unit tests it takes 90%-150% longer to bake than fixed size. It uses BlackPawn's lightmap packing algorithm to pack the images together.
 ## Examples
 ### Fixed Size
 All images must be the same size
@@ -20,7 +20,7 @@ ta:bake()
 ta:remove("dog")
 ta:remove("rabbit", true) -- Remove rabbit and bake changes
 
-ta:hardBake() -- Cannot add or remove images, and deletes all references to given images so they can be cleaned from memory
+ta:hardBake() -- Cannot add or remove images after call, and deletes all references to given images so they can be cleaned from memory
 
 local catDraw = ta:getDrawFuncForID("cat")
 
@@ -47,6 +47,7 @@ ta:remove("rabbit") -- will need to bake again
 ta:remove("cat", true, "area") -- remove graphic, bake with this sort
 
 ta:hardBake() -- Cannot add or remove images, and deletes all references to given images so they can be cleaned from memory
+collectgarbage("collect")
 
 local duckDraw = ta:getDrawFuncForID("duck")
 
@@ -102,6 +103,7 @@ dynamic:bake("height")
 ### textureAtlas:hardBake
 Hard baking bakes the image and removes references to all given images. Once called, you cannot add, remove or bake again. This function is designed to free up unused memory.
 **Note, any references to images that still exist outside of textureAtlas will keep the image alive (`image:release` is not called)**
+Call `collectgarbage("collect")` after `textureAtlas:hardBake` if you want to see instant results of cleaning out unused memory, otherwise let lua handle when it wants to collect garbage.
 ```lua
 fixed:hardBake()
 dynamic:hardBake(sortBy) -- See textureAtlas:bake for sortBy options
