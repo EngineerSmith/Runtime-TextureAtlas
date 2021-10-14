@@ -20,6 +20,8 @@ ta:bake()
 ta:remove("dog")
 ta:remove("rabbit", true) -- Remove rabbit and bake changes
 
+ta:hardBake() -- Cannot add or remove images, and deletes all references to given images so they can be cleaned from memory
+
 local catDraw = ta:getDrawFuncForID("cat")
 
 love.draw = function()
@@ -43,6 +45,8 @@ ta:bake("height") -- Sorting algorithm optimizes space use
 
 ta:remove("rabbit") -- will need to bake again
 ta:remove("cat", true, "area") -- remove graphic, bake with this sort
+
+ta:hardBake() -- Cannot add or remove images, and deletes all references to given images so they can be cleaned from memory
 
 local duckDraw = ta:getDrawFuncForID("duck")
 
@@ -89,11 +93,18 @@ Remove an image added to the atlas. Use the 2nd argument to bake the removal. Re
 Baking takes all added images and stitches them together onto a single image. Basic check in place to ensure it only bakes when changes have been made via `add` or `remove` to avoid needless baking
 ```lua
 fixed:bake()
-dynamic:bake(_sortby)
+dynamic:bake(sortby)
 dynamic:bake("height") 
 -- _sortBy options: "height" (default), "area", "width", "none"
 -- "height" and "area" are best from unit testing - but do your own tests to see what works best for your images
 -- use dynamic.image to grab the baked image
+```
+### textureAtlas:hardBake
+Hard baking bakes the image and removes references to all given images. Once called, you cannot add, remove or bake again. This function is designed to free up unused memory.
+**Note, any references to images that still exist outside of textureAtlas will keep the image alive (`image:release` is not called)**
+```lua
+fixed:hardBake()
+dynamic:hardBake(sortBy) -- See textureAtlas:bake for sortBy options
 ```
 ### textureAtlas:draw(id, ...)
 Draw function to draw given id, 2nd argument will be passed to `love.graphics.draw`

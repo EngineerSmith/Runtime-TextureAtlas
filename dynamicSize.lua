@@ -31,15 +31,15 @@ local width = function(a, b)
     return aW > bW
 end
 
--- _sortBy options: "area", "height" (default), "width", "none"
-dynamicSizeTA.bake = function(self, _sortBy)
-    if self._dirty then
+-- sortBy options: "height"(default), "area", "width", "none"
+dynamicSizeTA.bake = function(self, sortBy)
+    if self._dirty and not self._hardBake then
         local shallowCopy = {unpack(self.images)}
-        if _sortBy == nil or _sortBy == "height" then
+        if sortBy == nil or sortBy == "height" then
             sort(shallowCopy, height)
-        elseif _sortBy == "area" then
+        elseif sortBy == "area" then
             sort(shallowCopy, area)
-        elseif _sortBy == "width" then
+        elseif sortBy == "width" then
             sort(shallowCopy, width)
         end
         local estWidth, estHeight = 0, 0

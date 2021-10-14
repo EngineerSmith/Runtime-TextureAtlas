@@ -18,12 +18,16 @@ baseAtlas.new = function(padding)
         filterMin = "linear", 
         filterMag = "linear",
         _dirty = false, -- Marked dirty if image is added or removed,
+        _hardBake = false, -- Marked true if hardBake has been called, cannot use add or remove
     }, baseAtlas)
 end
 
 -- TA:add(img, "foo")
 -- TA:add(img, 68513, true)
 baseAtlas.add = function(self, image, id, bake, ...)
+    if self._hardBake then
+        error("Cannot add images to a texture atlas that has been hard baked")
+    end
     self.imagesSize = self.imagesSize + 1
     local index = self.imagesSize
     assert(type(id) ~= "nil", "Must give an id")
@@ -46,6 +50,9 @@ end
 -- TA:remove("foo", true)
 -- TA:remove(68513)
 baseAtlas.remove = function(self, id, bake, ...)
+    if self._hardBake then
+        error("Cannot remove images from a texture atlas that has been hard baked")
+    end
     local index = self.ids[id]
     if index then
         self.images[index] = nil
@@ -64,14 +71,20 @@ baseAtlas.bake = function(self)
     error("Warning! Created atlas hasn't overriden bake function!")
 end
 
-baseAtlas.hardBake = function(self)
-    error("Warning! Created atlas hasn't overriden hardBake function!")
+baseAtlas.hardBake = function(self, ...)
+    local result = self:bake(...)
+    self.images = nil
+    self.ids = nil
+    self._hardBake = true
+    return result
 end
 
 baseAtlas.setFilter = function(self, min, mag)
     self.filterMin = min or "linear"
     self.filterMag = mag or self.filterMin
-    
+    if self.image then
+        self.image:setFilter(self.filterMin, self.filterMag)
+    end
     return self
 end
 

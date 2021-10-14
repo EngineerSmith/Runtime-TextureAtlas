@@ -22,7 +22,7 @@ fixedSizeTA.add = function(self, image, id, bake)
 end
 
 fixedSizeTA.bake = function(self)
-    if self._dirty then
+    if self._dirty and not self._hardBake then
         local size = ceil(sqrt(#self.images))
         local width, height = self.width, self.height
         local widthPadded, heightPadded = width + self.padding, height + self.padding
