@@ -2,7 +2,7 @@
 Love2D runtime texture atlas! Tested and written on __love 11.3__ android.
 
 **Fixed Size**: All images must have the same width and height (e.g. 16x16, 512x64, etc)
-**Dynamic Size**: All images can be whatever size they want; however, from unit tests it takes 90%-150% longer to bake than fixed size. It uses BlackPawn's lightmap packing algorithm to pack the images together.
+**Dynamic Size**: All images can be whatever size they want; however, from unit tests it takes 90%-150% longer to bake than fixed size. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
 ## Examples
 ### Fixed Size
 All images must be the same size
