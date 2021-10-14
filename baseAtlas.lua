@@ -23,7 +23,7 @@ end
 
 -- TA:add(img, "foo")
 -- TA:add(img, 68513, true)
-baseAtlas.add = function(self, image, id, bake)
+baseAtlas.add = function(self, image, id, bake, ...)
     self.imagesSize = self.imagesSize + 1
     local index = self.imagesSize
     assert(type(id) ~= "nil", "Must give an id")
@@ -37,7 +37,7 @@ baseAtlas.add = function(self, image, id, bake)
     
     self._dirty = true
     if bake then
-        self:bake()
+        self:bake(...)
     end
     
     return self
@@ -45,7 +45,7 @@ end
 
 -- TA:remove("foo", true)
 -- TA:remove(68513)
-baseAtlas.remove = function(self, id, bake)
+baseAtlas.remove = function(self, id, bake, ...)
     local index = self.ids[id]
     if index then
         self.images[index] = nil
@@ -53,7 +53,7 @@ baseAtlas.remove = function(self, id, bake)
         self.ids[id] = nil
         self._dirty = true
         if bake == true then
-            self:bake()
+            self:bake(...)
         end
     end
     
