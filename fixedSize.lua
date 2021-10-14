@@ -26,7 +26,8 @@ fixedSizeTA.bake = function(self)
         local size = ceil(sqrt(#self.images))
         local width, height = self.width, self.height
         local widthPadded, heightPadded = width + self.padding, height + self.padding
-        local widthCanvas, heightCanvas = size * widthPadded, size * heightPadded
+        local rows = ceil(#self.images / size)
+        local widthCanvas, heightCanvas = size * widthPadded, rows * heightPadded
         local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
         local maxIndex = self.imagesSize
         lg.push("all")
