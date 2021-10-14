@@ -104,8 +104,8 @@ Add or replace an image to your atlas. Use the 3rd argument to bake the addition
 ta:add(image, id, bake = false, ...)
 ta:add(love.graphics.newImage("duck.png"), "duck")
 
-fixed:add(love.graphics.newImage("duck.png"), true)
-dynamic:add(love.graphics.newImage("duck.png"), true, "height") -- option to add in sorting algorithm
+fixed:add(love.graphics.newImage("duck.png"), "duck", true)
+dynamic:add(love.graphics.newImage("duck.png"), "duck", true, "height") -- option to add in sorting algorithm
 ```
 ### textureAtlas:remove(id, bake = false, ...)
 Remove an image added to the atlas. Use the 2nd argument to bake the removal. Recommended to only bake once all changes have been made or if you're only making a single change. 4th argument is passed to `textureAtlas.bake`
