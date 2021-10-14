@@ -1,8 +1,10 @@
-# Love2D-TA
-Love2D runtime texture atlas! Tested and written on __love 11.3__ android.
+# ES's runtime Texture Atlas
+A Love2D runtime texture atlas designed to be easy to use and memory optimized. Tested and written on __love 11.3__ android.
 
-**Fixed Size**: All images must have the same width and height (e.g. 16x16, 512x64, etc)
-**Dynamic Size**: All images can be whatever size they want; however, from unit tests it takes 90%-150% longer to bake than fixed size. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
+__**Fixed Size**: All images must have the same width and height (e.g. 16x16, 512x64, etc)__
+  Uses homebrew algorithm to pack. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of images on the width, then optimizes number of rows. (e.g., ceil(sqrt(50))=8, instead of an 8x8 grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row)
+__**Dynamic Size**: All images can be whatever size they want__
+  Unit tests shows it takes 90%-150% longer to bake than fixed size. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
 ## Examples
 ### Fixed Size
 All images must be the same size
@@ -71,6 +73,12 @@ Create an atlas to add images to
 ```lua
 local fs = textureAtlas.newFixedSize(width, height = width, padding = 1)
 local ds = textureAtlas.newDynamicSize(padding = 1)
+
+textureAtlas.newFixedSize(16) -- 16x16 only, padding 1 pixel
+textureAtlas.newFixedSize(32,64, 5) -- 32x64 only, padding 5 pixel
+
+textureAtlas.newDynamicSize(1) -- padding 1 pixel
+textureAtlas.newDynamicSize(5) -- padding 5 pixels
 ```
 ### textureAtlas:setFilter(min, mag = min)
 Similar to `image:setFilter`; however, will always override default filter even if not changed. E.g. if `love.graphics.setDefaultFilter("nearest", "nearest")` is called, textureAtlas will continue to bake in `"linear"`
@@ -85,8 +93,8 @@ Add or replace an image to your atlas. Use the 3rd argument to bake the addition
 ta:add(image, id, bake = false, ...)
 ta:add(love.graphics.newImage("rabbit.png"), "rabbit")
 
-fs:add(love.graphics.newImage("duck.png"), true)
-ds:add(love.graphics.newImage("duck.png"), true, "height") -- option to add in sorting algorithm
+fixed:add(love.graphics.newImage("duck.png"), true)
+dynamic:add(love.graphics.newImage("duck.png"), true, "height") -- option to add in sorting algorithm
 ```
 ### textureAtlas:remove(id, bake = false, ...)
 Remove an image added to the atlas. Use the 2nd argument to bake the removal. Recommended to only bake once all changes have been made or if you're only making a single change. 4th argument is passed to `textureAtlas.bake`
