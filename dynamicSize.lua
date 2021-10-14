@@ -42,12 +42,7 @@ dynamicSizeTA.bake = function(self, sortBy)
         elseif sortBy == "width" then
             sort(shallowCopy, width)
         end
-        local estWidth, estHeight = 0, 0
-        for _, image in ipairs(shallowCopy) do
-            estWidth = estWidth + image.image:getWidth()
-            estHeight = estHeight + image.image:getHeight()
-        end
-        --error(math.sqrt(estWidth)*math.sqrt(estHeight))
+        
         -- Calculate positions and size of canvas
         local maxWidth, maxHeight = 0,0
         local root = treeNode.new(math.huge, math.huge)
@@ -67,12 +62,11 @@ dynamicSizeTA.bake = function(self, sortBy)
             end
         end
         
-        --error(maxWidth .. ":" .. maxHeight)
         local canvas = lg.newCanvas(maxWidth, maxHeight, self._canvasSettings)
         lg.push("all")
         lg.setCanvas(canvas)
         lg.clear(1,0,1,1)
-        root:draw()
+        root:draw(self.quads, maxWidth, maxHeight)
         lg.pop()
         self.image = lg.newImage(canvas:newImageData())
         self.image:setFilter(self.filterMin, self.filterMag)

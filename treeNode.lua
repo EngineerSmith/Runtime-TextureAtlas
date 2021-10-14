@@ -57,12 +57,13 @@ treeNode.insert = function(self, image, width, height)
     end
 end
 
-treeNode.draw = function(self)
+treeNode.draw = function(self, quads, width, height)
     if self.image then
         lg.draw(self.image.image, self.x, self.y)
+        quads[self.image.id] = lg.newQuad(self.x, self.y, self.image.image:getDimensions(), width, height)
     elseif self[1] --[[ and self[2] ]] then 
-        self[1]:draw()
-        self[2]:draw()
+        self[1]:draw(quads, width, height)
+        self[2]:draw(quads, width, height)
     end
 end
 
