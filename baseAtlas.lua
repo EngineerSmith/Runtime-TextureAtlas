@@ -83,6 +83,15 @@ baseAtlas.hardBake = function(self, ...)
     return self
 end
 
+-- returns position on texture atlas, x,y, w,h
+baseAtlas.getViewport = function(self, id)
+    local quad = self.quads[id]
+    if quad then
+        return quad:getViewport()
+    end
+    error("Warning! Quad hasn't been baked for id: " .. tostring(id))
+end
+
 baseAtlas.setFilter = function(self, min, mag)
     self.filterMin = min or "linear"
     self.filterMag = mag or self.filterMin

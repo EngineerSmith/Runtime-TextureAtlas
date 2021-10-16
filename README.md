@@ -63,6 +63,7 @@ local duckDraw = ta:getDrawFuncForID("duck")
 love.draw = function()
     ta:draw("banner", 50,50)
     duckDraw(100,50, 0, 5,5)
+    love.graphics.print(("x%d:y%d\nw%d:h%d"):format(ta:getViewport("duck")))
 end
 ```
 ## Docs
@@ -115,6 +116,12 @@ ta:remove("duck")
 
 fixed:remove("duck", true)
 dynamic:remove("duck", true, "area")
+```
+### textureAtlas:getViewport(id)
+Get viewport for given id. Returns position, width and height for it's location on the texture atlas. Will throw an error if a quad doesn't exist for given id.
+```lua
+local x, y, w, h = ta:getViewport(id)
+local x, y, w, h = ta:getViewport("duck")
 ```
 ### textureAtlas:bake
 Baking takes all added images and stitches them together onto a single image. Basic check in place to ensure it only bakes when changes have been made via `add` or `remove` to avoid needless baking
