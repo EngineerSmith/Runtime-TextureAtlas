@@ -69,7 +69,7 @@ end
 ## Docs
 Clone into your lib/include file for your love2d project.
 
-E.g. `git clone https://github.com/EngineerSmith/Love2D-TA libs/TA`
+E.g. `git clone https://github.com/EngineerSmith/Runtime-TextureAtlas libs/TA`
 ### require
 Require the library using the init.lua
 ```lua
