@@ -2,7 +2,9 @@
 -- Under the MIT license, see license suppiled with this file
 local path = select(1, ...):match("(.-)[^%.]+$")
 local baseAtlas = require(path .. "baseAtlas")
-local dynamicSizeTA = setmetatable({}, baseAtlas)
+local dynamicSizeTA = setmetatable({
+    _maxCanvas =  love.graphics.getSystemLimits().texturesize -1
+}, baseAtlas)
 dynamicSizeTA.__index = dynamicSizeTA
 
 -- Based on BlackPawn's lightmap packing: https://blackpawn.com/texts/lightmaps/default.html
@@ -47,7 +49,7 @@ dynamicSizeTA.bake = function(self, sortBy)
         
         -- Calculate positions and size of canvas
         local maxWidth, maxHeight = 0,0
-        local root = treeNode.new(math.huge, math.huge)
+        local root = treeNode.new(self._maxCanvas, self._maxCanvas)
         
         for _, image in ipairs(shallowCopy) do
             local img = image.image
