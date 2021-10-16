@@ -5,6 +5,7 @@ local baseAtlas = {
     _canvasSettings = {
         dpiscale = 1,
     },
+    _maxCanvasSize =  love.graphics.getSystemLimits().texturesize -1
 }
 baseAtlas.__index = baseAtlas
 

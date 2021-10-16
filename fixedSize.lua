@@ -7,7 +7,7 @@ local fixedSizeTA = setmetatable({}, baseAtlas)
 fixedSizeTA.__index = fixedSizeTA
 
 local lg = love.graphics
-local ceil, sqrt = math.ceil, math.sqrt
+local ceil, floor, sqrt = math.ceil, math.sqrt, math.floor
 
 fixedSizeTA.new = function(width, height, padding)
     local self = setmetatable(baseAtlas.new(padding), fixedSizeTA)
@@ -26,11 +26,27 @@ end
 
 fixedSizeTA.bake = function(self)
     if self._dirty and not self._hardBake then
-        local columns = ceil(sqrt(#self.images))
+        local columns = ceil(sqrt(self.imagesSize))
         local width, height = self.width, self.height
         local widthPadded, heightPadded = width + self.padding, height + self.padding
-        local rows = ceil(#self.images / columns)
-        local widthCanvas, heightCanvas = columns * widthPadded, rows * heightPadded
+        
+        local widthCanvas = columns * widthPadded
+        if widthCanvas > self._maxCanvasSize then
+            columns = floor(self._maxCanvasSize / width)
+            widthCanvas = columns * widthPadded
+        end
+            
+        local rows = ceil(self.imagesSize / columns)
+        local heightCanvas = rows * heightPadded
+        if heightPadded > self._maxCanvasSize then
+            rows = floor(self._maxCanvasSize / height)
+            heightCanvas = rows * heightPadded
+        end
+        
+        if columns * rows < self.imagesSize then
+            error("Cannot support "..tostring(self.imagesSize).." images, due to system limits of canvas size. Max allowed on this system: "..tostring(columns * rows))
+        end
+        
         local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
         local maxIndex = self.imagesSize
         lg.push("all")
