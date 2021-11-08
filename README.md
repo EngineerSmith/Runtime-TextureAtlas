@@ -11,10 +11,11 @@ There are two types of Texture atlas you have access to:
 
   It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together. Unit tests shows it takes 90%-120% longer to bake than fixed size (this is a given due to having to produce a binrary tree for sizes verse just throwing them in). Which isn't an issue unless you have 1000+ images on one texture atlas, then it will freeze until baking has been complete. See advice to solve this issues below.
  
-**Window Freezing during baking**
+### Advice: Window Freezing during baking
+
   If your game window is freezing, it is due to the baking process taking too long. Try to avoid baking until the end, and avoid baking over and over unless you need to keep changing the images within the atlas. (If you're doing this to say animate, add all frames and then select the differnet quads in the draw)
   
-  A good fix if you are experience this is to move the creation and baking to `config.lua`. `config.lua` runs before the window is created avoiding the issue of it freezing. Otherwise there is no way easy way around it; you can use another library such as [Lily](https://github.com/MikuAuahDark/lily) to multi-thread load image - this will increase performance a little for loading your images.
+  A good fix if you are experience in Love2D is to move the creation and baking to `config.lua`. This file runs before the window is created avoiding the issue of it freezing. Otherwise there is no way easy way around it. You can use another library such as [Lily](https://github.com/MikuAuahDark/lily) to multi-thread load image - this will increase performance a little for loading your images.
 ## Examples
 ### Fixed Size
 All images must be the same size
