@@ -5,11 +5,16 @@ There are two types of Texture atlas you have access to:
 
 **Fixed Size**: *All images must have the same width and height*
 
-  Uses homebrew algorithm to pack images. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of columns, then optimizes number of rows. (e.g. ceil(sqrt(50))=8, instead of an 8x8= grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row)
+  Uses homebrew algorithm to pack images. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of columns, then optimizes number of rows. (e.g. ceil(sqrt(50))=8, instead of an 8x8= grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row). If you are baking an awful lot of images, and the window is freezing: see advice to solve this issues below.
 
 **Dynamic Size**: *All images can be whatever size they want*
 
-  Unit tests shows it takes 90%-120% longer to bake than fixed size. Which isn't an issue unless you have 1000+ images on one texture atlas, then it will freeze the game loop up. It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together.
+  It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together. Unit tests shows it takes 90%-120% longer to bake than fixed size (this is a given due to having to produce a binrary tree for sizes verse just throwing them in). Which isn't an issue unless you have 1000+ images on one texture atlas, then it will freeze until baking has been complete. See advice to solve this issues below.
+ 
+**Window Freezing during baking**
+  If your game window is freezing, it is due to the baking process taking too long. Try to avoid baking until the end, and avoid baking over and over unless you need to keep changing the images within the atlas. (If you're doing this to say animate, add all frames and then select the differnet quads in the draw)
+  
+  A good fix if you are experience this is to move the creation and baking to `config.lua`. `config.lua` runs before the window is created avoiding the issue of it freezing. Otherwise there is no way easy way around it; you can use another library such as [Lily](https://github.com/MikuAuahDark/lily) to multi-thread load image - this will increase performance a little for loading your images.
 ## Examples
 ### Fixed Size
 All images must be the same size
