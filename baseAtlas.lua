@@ -107,14 +107,6 @@ baseAtlas.draw = function(self, id, ...)
   lg.draw(self.image, self.quads[id], ...)
 end
 
--- Following functions are if you don't want to pass textureAtlas or ids around
-
-baseAtlas.getDrawFunc = function(self)
-  return function(...) -- uses baseAtlas.draw's args (id, ...)
-    self:draw(...)
-  end
-end
-
 baseAtlas.getDrawFuncForID = function(self, id)
   return function(...)
     lg.draw(self.image, self.quads[id], ...)

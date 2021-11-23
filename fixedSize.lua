@@ -43,9 +43,13 @@ fixedSizeTA.bake = function(self)
       heightCanvas = rows * heightPadded
     end
     
+    local array = nil
     if columns * rows < self.imagesSize then
+      if fixedSizeTA._arrayTextureSupport then
       
-      error("Cannot support "..tostring(self.imagesSize).." images, due to system limits of canvas size. Max allowed on this system: "..tostring(columns * rows))
+      else
+        error("Cannot support "..tostring(self.imagesSize).." images, due to system limits of canvas size. Max allowed on this system: "..tostring(columns * rows))
+      end
     end
     
     local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
