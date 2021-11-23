@@ -151,12 +151,6 @@ Call `collectgarbage("collect")` after `textureAtlas:hardBake` if you want to se
 fixed:hardBake()
 dynamic:hardBake(sortBy) -- See textureAtlas:bake for sortBy options
 ```
-### textureAtlas:draw(id, ...)
-Draw function to draw given id, 2nd argument will be passed to `love.graphics.draw`
-```lua
-ta:draw(id, ...) ---translates to--> love.graphics.draw(ta.image, ta.quads[id], ...)
-ta:draw("duck", 50,50, 0, 5,5) -- draws id "duck" at 50,50 at scale 5
-```
 ### textureAtlas:getDrawFunc()
 Get a draw function to avoid passing given texture atlas around
 ```lua
