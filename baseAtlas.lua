@@ -7,8 +7,8 @@ local baseAtlas = {
   _canvasSettings = {
     dpiscale = 1,
   },
-  _maxCanvasSize =  lg.getSystemLimits().texturesize -1
-  _arrayTextureSupport = lg.getTextureTypes()["array"]
+  _maxCanvasSize =  lg.getSystemLimits().texturesize - 1,
+  _arrayTextureSupport = lg.getTextureTypes()["array"],
 }
 baseAtlas.__index = baseAtlas
 
