@@ -87,15 +87,20 @@ Create an atlas to add images too:
 - Fixed Size atlas require all added images to have the same width and height
 - Dynamic Size atlas allows for any size of image
 
+* Padding allows you to add a border apart from each image
+* Extrude allows you to extend the image using the clamp warp mode (or that which you've set for the image) See [here](https://love2d.org/wiki/WrapMode) for an example
+
 ```lua
-local fs = textureAtlas.newFixedSize(width, height = width, padding = 1)
-local ds = textureAtlas.newDynamicSize(padding = 1)
+local fs = textureAtlas.newFixedSize(width, height = width, padding = 1, extrude=0)
+local ds = textureAtlas.newDynamicSize(padding = 1, extrude=0)
 
 textureAtlas.newFixedSize(16) -- 16x16 only, padding 1 pixel
 textureAtlas.newFixedSize(32,64, 5) -- 32x64 only, padding 5 pixel
+textureAtlas.newFixedSize(64,64, 5, 3) -- 64x64 only, padding 5 pixels, extrude 3 pixels
 
 textureAtlas.newDynamicSize(1) -- padding 1 pixel
 textureAtlas.newDynamicSize(5) -- padding 5 pixels
+textureAtlas.newDynamicSize(3, 3) -- padding 3 pixels, extrude 3 pixels
 ```
 ### textureAtlas:setFilter(min, mag = min)
 Similar to `image:setFilter`; however, will always override default filter even if not changed. E.g. if `love.graphics.setDefaultFilter("nearest", "nearest")` is called, textureAtlas will continue to bake in `"linear"`
