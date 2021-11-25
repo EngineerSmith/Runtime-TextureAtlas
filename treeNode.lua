@@ -63,14 +63,16 @@ treeNode.insert = function(self, image, width, height)
   end
 end
 
-treeNode.draw = function(self, quads, width, height)
+treeNode.draw = function(self, quads, width, height, extrude)
   if self.image then
     local img = self.image.image
-    lg.draw(img, self.x, self.y)
-    quads[self.image.id] = lg.newQuad(self.x, self.y, img:getWidth(), img:getHeight(), width, height)
+    local iwidth, iheight = img:getDimensions()
+    local extrudeQuad = lg.newQuad(-extrude, -extrude, iwidth+extrude*2, iheight+extrude*2, iwidth, iheight)
+    lg.draw(img, extrudeQuad, self.x, self.y)
+    quads[self.image.id] = lg.newQuad(self.x+extrude, self.y+extrude, iwidth, iheight, width, height)
   elseif self[1] --[[ and self[2] ]] then 
-    self[1]:draw(quads, width, height)
-    self[2]:draw(quads, width, height)
+    self[1]:draw(quads, width, height, extrude)
+    self[2]:draw(quads, width, height, extrude)
   end
 end
 

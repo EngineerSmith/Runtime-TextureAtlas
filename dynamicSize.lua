@@ -11,8 +11,8 @@ local treeNode = require(path .. "treeNode")
 local lg = love.graphics
 local sort = table.sort
 
-dynamicSizeTA.new = function(padding)
-  return setmetatable(baseAtlas.new(padding), dynamicSizeTA)
+dynamicSizeTA.new = function(padding, extrude)
+  return setmetatable(baseAtlas.new(padding, extrude), dynamicSizeTA)
 end
 
 local area = function(a, b)
@@ -51,23 +51,25 @@ dynamicSizeTA.bake = function(self, sortBy)
     
     for _, image in ipairs(shallowCopy) do
       local img = image.image
-      local w, h = img:getDimensions()
-      local node = root:insert(image, w+self.padding, h+self.padding)
+      local width, height = img:getDimensions()
+      width = width + self.padding + self.extrude * 2
+      height = height + self.padding + self.extrude * 2
+      local node = root:insert(image, width, height)
       if not node then
-        error("Somehow could not fit image inside tree")
+        error("Could not fit image inside tree")
       end
-      if node.x + w > maxWidth then
-        maxWidth = node.x + w
+      if node.x + width > maxWidth then
+        maxWidth = node.x + width
       end
-      if node.y + h > maxHeight then
-        maxHeight = node.y + h
+      if node.y + height > maxHeight then
+        maxHeight = node.y + height
       end
     end
     
-    local canvas = lg.newCanvas(maxWidth, maxHeight, self._canvasSettings)
+    local canvas = lg.newCanvas(maxWidth-self.padding, maxHeight-self.padding, self._canvasSettings)
     lg.push("all")
     lg.setCanvas(canvas)
-    root:draw(self.quads, maxWidth, maxHeight)
+    root:draw(self.quads, maxWidth, maxHeight, self.extrude)
     lg.pop()
     local data = canvas:newImageData()
     self.image = lg.newImage(data)

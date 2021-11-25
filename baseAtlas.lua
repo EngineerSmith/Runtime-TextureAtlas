@@ -12,9 +12,10 @@ local baseAtlas = {
 }
 baseAtlas.__index = baseAtlas
 
-baseAtlas.new = function(padding)
+baseAtlas.new = function(padding, extrude)
   return setmetatable({
     padding = padding or 1,
+    extrude = extrude or 0,
     image,
     images = {},
     imagesSize = 0,
