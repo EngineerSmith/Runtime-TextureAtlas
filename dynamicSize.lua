@@ -69,9 +69,11 @@ dynamicSizeTA.bake = function(self, sortBy)
         lg.setCanvas(canvas)
         root:draw(self.quads, maxWidth, maxHeight)
         lg.pop()
-        self.image = lg.newImage(canvas:newImageData())
+        local data = canvas:newImageData()
+        self.image = lg.newImage(data)
         self.image:setFilter(self.filterMin, self.filterMag)
         self._dirty = false
+        return self, data
     end
     
     return self
