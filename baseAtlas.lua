@@ -78,11 +78,11 @@ baseAtlas.bake = function(self)
 end
 
 baseAtlas.hardBake = function(self, ...)
-    local _, data = self:bake(...)
-    self.images = nil
-    self.ids = nil
-    self._hardBake = true
-    return self, data
+  local _, data = self:bake(...)
+  self.images = nil
+  self.ids = nil
+  self._hardBake = true
+  return self, data
 end
 
 -- returns position on texture atlas, x,y, w,h
