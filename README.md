@@ -1,4 +1,4 @@
-# ES's Runtime Texture Atlas
+# Runtime Texture Atlas (RTA)
 A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on **love 11.3 android**.
 
 There are two types of Texture atlas you have access to:
