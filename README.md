@@ -87,7 +87,7 @@ Create an atlas to add images too:
 - Fixed Size atlas require all added images to have the same width and height
 - Dynamic Size atlas allows for any size of image
 
-
+Common variables explained:
 * Padding: allows you to add a border between each image
 * Extrude: allows you to extend the image using the clamp warp mode (or that which you've set for the image) See [here](https://love2d.org/wiki/WrapMode) for an example of clamp.
 
