@@ -66,7 +66,14 @@ dynamicSizeTA.bake = function(self, sortBy)
       end
     end
     
-    local canvas = lg.newCanvas(maxWidth-self.padding, maxHeight-self.padding, self._canvasSettings)
+    maxWidth, maxHeight = maxWidth - self.padding, maxHeight - self.padding
+    
+    if self.bakeAsPow2 then
+      maxWidth = math.pow(2, math.ceil(math.log(maxWidth)/math.log(2)))
+      maxHeight = math.pow(2, math.ceil(math.log(maxHeight)/math.log(2)))
+    end
+    
+    local canvas = lg.newCanvas(maxWidth, maxHeight, self._canvasSettings)
     lg.push("all")
     lg.setCanvas(canvas)
     root:draw(self.quads, maxWidth, maxHeight, self.extrude)

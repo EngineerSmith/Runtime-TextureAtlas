@@ -49,7 +49,12 @@ fixedSizeTA.bake = function(self)
     end
     
     local extrudeQuad = lg.newQuad(-self.extrude, -self.extrude, width+self.extrude*2, height+self.extrude*2, self.width, self.height)
-    local canvas = lg.newCanvas(widthCanvas-self.padding, heightCanvas-self.padding, self._canvasSettings)
+    widthCanvas, heightCanvas = widthCanvas - self.padding, heightCanvas - self.padding
+    if self.bakeAsPow2 then
+      widthCanvas = math.pow(2, math.ceil(math.log(widthCanvas)/math.log(2)))
+      heightCanvas = math.pow(2, math.ceil(math.log(heightCanvas)/math.log(2)))
+    end
+    local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
     local maxIndex = self.imagesSize
     lg.push("all")
     lg.setCanvas(canvas)

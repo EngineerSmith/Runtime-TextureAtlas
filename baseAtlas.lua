@@ -23,6 +23,7 @@ baseAtlas.new = function(padding, extrude)
     quads = {},
     filterMin = "linear", 
     filterMag = "linear",
+    bakeAsPow2 = false,
     _dirty = false, -- Marked dirty if image is added or removed,
     _hardBake = false, -- Marked true if hardBake has been called, cannot use add, remove or bake once true
   }, baseAtlas)
@@ -102,6 +103,10 @@ baseAtlas.setFilter = function(self, min, mag)
     self.image:setFilter(self.filterMin, self.filterMag)
   end
   return self
+end
+
+baseAtlas.setBakeAsPow2 = function(self, bakeAsPow2)
+  self.bakeAsPow2 = bakeAsPow2 or false
 end
 
 baseAtlas.draw = function(self, id, ...)

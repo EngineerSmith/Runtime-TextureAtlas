@@ -109,6 +109,12 @@ Similar to `image:setFilter`; however, will always override default filter even 
 ta:setFilter(min, mag = min)
 ta:setFilter("nearest")
 ```
+### textureAtlas:setBakeAsPow2(boolean = false)
+Will round the atlas width and height to their nearest power of 2 value. Do note that the packing algorithms are not optimized for spacing towards the closest power of 2, and you may be left with a lot of empty space. This function doesn't rebake the atlas, and can be called after hard bake function has been ran, but it will not do anything. This function is useful for those who want to export an atlas as an external resource as some old graphics cards and old smartphones requires textures to be power of 2 and can (in some cases) increase performace minimally. 
+```lua
+ta:setBakeAsPow2(true)
+ta:setBakeAsPow2(false)
+```
 ### textureAtlas:add(image, id, bake = false, ...)
 Add or replace an image to your atlas. Use the 3rd argument to bake the addition. Recommended to only bake once all changes have been made - useful for updating one image. 4th argument is passed to `textureAtlas.bake`
 
