@@ -9,8 +9,8 @@ fixedSizeTA.__index = fixedSizeTA
 local lg = love.graphics
 local ceil, floor, sqrt = math.ceil, math.sqrt, math.floor
 
-fixedSizeTA.new = function(width, height, padding, extrude)
-  local self = setmetatable(baseAtlas.new(padding, extrude), fixedSizeTA)
+fixedSizeTA.new = function(width, height, padding, extrude, spacing)
+  local self = setmetatable(baseAtlas.new(padding, extrude, spacing), fixedSizeTA)
   self.width = width or error("Width required")
   self.height = height or width
   return self
@@ -28,8 +28,8 @@ fixedSizeTA.bake = function(self)
   if self._dirty and not self._hardBake then
     local columns = ceil(sqrt(self.imagesSize))
     local width, height = self.width, self.height
-    local widthPadded = width + self.padding + self.extrude * 2
-    local heightPadded = height + self.padding + self.extrude * 2
+    local widthPadded = width + self.spacing + self.extrude * 2 + self.padding * 2
+    local heightPadded = height + self.spacing + self.extrude * 2 + self.padding * 2
     
     local widthCanvas = columns * widthPadded
     if widthCanvas > self._maxCanvasSize then
@@ -49,7 +49,7 @@ fixedSizeTA.bake = function(self)
     end
     
     local extrudeQuad = lg.newQuad(-self.extrude, -self.extrude, width+self.extrude*2, height+self.extrude*2, self.width, self.height)
-    widthCanvas, heightCanvas = widthCanvas - self.padding, heightCanvas - self.padding
+    widthCanvas, heightCanvas = widthCanvas - self.spacing, heightCanvas - self.spacing
     if self.bakeAsPow2 then
       widthCanvas = math.pow(2, math.ceil(math.log(widthCanvas)/math.log(2)))
       heightCanvas = math.pow(2, math.ceil(math.log(heightCanvas)/math.log(2)))
@@ -64,10 +64,10 @@ fixedSizeTA.bake = function(self)
         if index > maxIndex then
           break
         end
-        local x, y = x*widthPadded, y*heightPadded
+        local x, y = x * widthPadded + self.padding, y * heightPadded + self.padding
         local image = self.images[index]
         lg.draw(image.image, extrudeQuad, x, y)
-        self.quads[image.id] = lg.newQuad(x+self.extrude, y+self.extrude, width, height, widthCanvas, heightCanvas)
+        self.quads[image.id] = lg.newQuad(x+self.extrude+self.padding, y+self.extrude+self.padding, width, height, widthCanvas, heightCanvas)
       end
     end
     lg.pop()

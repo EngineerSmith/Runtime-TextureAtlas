@@ -12,10 +12,11 @@ local baseAtlas = {
 }
 baseAtlas.__index = baseAtlas
 
-baseAtlas.new = function(padding, extrude)
+baseAtlas.new = function(padding, extrude, spacing)
   return setmetatable({
     padding = padding or 1,
     extrude = extrude or 0,
+    spacing = spacing or 0,
     image,
     images = {},
     imagesSize = 0,
@@ -107,6 +108,18 @@ end
 
 baseAtlas.setBakeAsPow2 = function(self, bakeAsPow2)
   self.bakeAsPow2 = bakeAsPow2 or false
+end
+
+baseAtlas.setPadding = function(self, padding)
+  self.padding = padding or 1
+end
+
+baseAtlas.setExtrude = function(self, extrude)
+  self.extrude = extrude or 0
+end
+
+baseAtlas.setSpacing = function(self, spacing)
+  self.spacing = spacing or 0
 end
 
 baseAtlas.draw = function(self, id, ...)

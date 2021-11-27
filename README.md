@@ -88,12 +88,13 @@ Create an atlas to add images too:
 - Dynamic Size atlas allows for any size of image
 
 Common variables explained:
-* Padding: allows you to add a border between each image
+* Padding: allows you to add a border around each image
 * Extrude: allows you to extend the image using the clamp warp mode (or that which you've set for the image) See [here](https://love2d.org/wiki/WrapMode) for an example of clamp.
-
+* Spacing: allows you to add space between each image, different from pading as it doesn't add space between atlas edge and the images.
+Padding Vs Spacing: 1 pixel of spacing would leave a 1 pixel gap between images, whilst 1 pixel of padding would leave a 2 pixel gap between each image. Spacing would allow the texture to go up to the edges of the atlas, whilst padding will not
 ```lua
-local fs = textureAtlas.newFixedSize(width, height = width, padding = 1, extrude=0)
-local ds = textureAtlas.newDynamicSize(padding = 1, extrude=0)
+local fs = textureAtlas.newFixedSize(width, height = width, padding = 1, extrude=0, spacing=0)
+local ds = textureAtlas.newDynamicSize(padding = 1, extrude=0, spacing=0)
 
 textureAtlas.newFixedSize(16) -- 16x16 only, padding 1 pixel
 textureAtlas.newFixedSize(32,64, 5) -- 32x64 only, padding 5 pixel
@@ -114,6 +115,24 @@ Will round the atlas width and height to their nearest power of 2 value. Do note
 ```lua
 ta:setBakeAsPow2(true)
 ta:setBakeAsPow2(false)
+```
+### textureAtlas:setPadding(padding)
+Sets padding around each image, this will push the image away from the edge of the atlas.
+```lua
+ta:setPadding(1)
+ta:setPadding(4)
+```
+### textureAtlas:setExtrude(extrude)
+Sets how much an image should be extruded by. It allows you to extend the image using the clamp warp mode (or that which you've set for the image) See [here](https://love2d.org/wiki/WrapMode) for an example of clamp. This can help with bleeding in some cases. This function will use the indivual warp mode of each image, be default this is "clamp". You can change this by setting the warp mode of each image you give to the texture atlas.
+```lua
+ta:setExtrude(1)
+ta:setExtrude(2)
+```
+### textureAtlas:setSpacing(spacing)
+Sets spacing between each image, doesn't add spacing between images and the edge of the atlas.
+```lua
+ta:setSpacing(1)
+ta:setSpacing(3)
 ```
 ### textureAtlas:add(image, id, bake = false, ...)
 Add or replace an image to your atlas. Use the 3rd argument to bake the addition. Recommended to only bake once all changes have been made - useful for updating one image. 4th argument is passed to `textureAtlas.bake`
