@@ -87,22 +87,24 @@ Create an atlas to add images too:
 - Fixed Size atlas require all added images to have the same width and height
 - Dynamic Size atlas allows for any size of image
 
-Common variables explained:
+Variables explained:
 * Padding: allows you to add a border around each image
 * Extrude: allows you to extend the image using the clamp warp mode (or that which you've set for the image) See [here](https://love2d.org/wiki/WrapMode) for an example of clamp.
 * Spacing: allows you to add space between each image, different from pading as it doesn't add space between atlas edge and the images.
-Padding Vs Spacing: 1 pixel of spacing would leave a 1 pixel gap between images, whilst 1 pixel of padding would leave a 2 pixel gap between each image. Spacing would allow the texture to go up to the edges of the atlas, whilst padding will not
+Padding Vs Spacing: 1 pixel of spacing would leave a 1 pixel gap between images, whilst 1 pixel of padding would leave a 2 pixel gap between each image. Spacing would allow the texture to go up to the edges of the atlas, whilst padding will not.
 ```lua
-local fs = textureAtlas.newFixedSize(width, height = width, padding = 1, extrude=0, spacing=0)
-local ds = textureAtlas.newDynamicSize(padding = 1, extrude=0, spacing=0)
+local fs = textureAtlas.newFixedSize(width, height = width, padding = 1, extrude = 0, spacing = 0)
+local ds = textureAtlas.newDynamicSize(padding = 1, extrude = 0, spacing = 0)
 
 textureAtlas.newFixedSize(16) -- 16x16 only, padding 1 pixel
 textureAtlas.newFixedSize(32,64, 5) -- 32x64 only, padding 5 pixel
 textureAtlas.newFixedSize(64,64, 5, 3) -- 64x64 only, padding 5 pixels, extrude 3 pixels
+textureAtlas.newFixedSize(64,64, 2, 2, 2) -- 64x64 only, padding 2 pixels, extrude 2 pixels, space 2 pixels
 
 textureAtlas.newDynamicSize(1) -- padding 1 pixel
 textureAtlas.newDynamicSize(5) -- padding 5 pixels
 textureAtlas.newDynamicSize(3, 3) -- padding 3 pixels, extrude 3 pixels
+textureAtlas.newDynamicSize(2, 2, 2) -- padding 2 pixels, extrude 2 pixels, space 2 pixels
 ```
 ### textureAtlas:setFilter(min, mag = min)
 Similar to `image:setFilter`; however, will always override default filter even if not changed. E.g. if `love.graphics.setDefaultFilter("nearest", "nearest")` is called, textureAtlas will continue to bake in `"linear"`
