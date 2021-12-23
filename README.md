@@ -15,7 +15,9 @@ There are two types of Texture atlas you have access to:
 
   If your game window is freezing, it is due to the baking process taking too long. Try to avoid baking until the end, and avoid baking over and over unless you need to keep changing the images within the atlas. (If you're doing this to say animate, add all frames and then select the differnet quads in the draw)
   
-  A good fix if you are experience in Love2D is to move the creation and baking to `config.lua`. This file runs before the window is created avoiding the issue of it freezing. Otherwise there is no way easy way around it. You can use another library such as [Lily](https://github.com/MikuAuahDark/lily) to multi-thread load image - this will increase performance a little for loading your images.
+  Otherwise there is no way easy way around it. You can use another library such as [Lily](https://github.com/MikuAuahDark/lily) to multi-thread load image - this will increase performance a little for loading your images.
+
+TLDR; bake once at the start of your game
 ## Examples
 ### Fixed Size
 All images must be the same size
