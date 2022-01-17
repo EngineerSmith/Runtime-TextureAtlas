@@ -16,20 +16,20 @@ dynamicSizeTA.new = function(padding, extrude, spacing)
 end
 
 local area = function(a, b)
-  local aW, aH = a.image:getDimensions()
-  local bW, bH = b.image:getDimensions()
+  local aW, aH = a.image:getPixelDimensions()
+  local bW, bH = b.image:getPixelDimensions()
   return aW * aH > bW * bH
 end
 
 local height = function(a, b)
-  local aH = a.image:getHeight()
-  local bH = b.image:getHeight()
+  local aH = a.image:getPixelHeight()
+  local bH = b.image:getPixelHeight()
   return aH > bH
 end
 
 local width = function(a, b)
-  local aW = a.image:getWidth()
-  local bW = b.image:getWidth()
+  local aW = a.image:getPixelWidth()
+  local bW = b.image:getPixelWidth()
   return aW > bW
 end
 
@@ -51,7 +51,7 @@ dynamicSizeTA.bake = function(self, sortBy)
     
     for _, image in ipairs(shallowCopy) do
       local img = image.image
-      local width, height = img:getDimensions()
+      local width, height = img:getPixelDimensions()
       width = width + self.spacing + self.extrude * 2 + self.padding * 2
       height = height + self.spacing + self.extrude * 2 + self.padding * 2
       local node = root:insert(image, width, height)
