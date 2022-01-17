@@ -67,7 +67,7 @@ fixedSizeTA.bake = function(self)
         local x, y = x * widthPadded + self.padding, y * heightPadded + self.padding
         local image = self.images[index]
         lg.draw(image.image, extrudeQuad, x, y)
-        self.quads[image.id] = lg.newQuad(x+self.extrude+self.padding, y+self.extrude+self.padding, width, height, widthCanvas, heightCanvas)
+        self.quads[image.id] = lg.newQuad(x+self.extrude, y+self.extrude, width, height, widthCanvas, heightCanvas)
       end
     end
     lg.pop()
