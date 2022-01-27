@@ -32,6 +32,7 @@ fixedSizeTA.bake = function(self)
     local widthPadded = width + self.spacing + self.extrude * 2 + self.padding * 2
     local heightPadded = height + self.spacing + self.extrude * 2 + self.padding * 2
     local maxIndex = self.imagesSize
+    local data
 
     local widthCanvas = columns * widthPadded
     if widthCanvas > self._maxCanvasSize then
@@ -53,7 +54,7 @@ fixedSizeTA.bake = function(self)
     end
 
     if self._pureImageMode then
-      local imageData = love.image.newImageData(widthCanvas, heightCanvas, "rgba8")
+      data = love.image.newImageData(widthCanvas, heightCanvas, "rgba8")
       for x=0, columns-1 do
         for y=0, rows-1 do
           local index = (x+y*rows)+1
@@ -62,9 +63,9 @@ fixedSizeTA.bake = function(self)
           end
           local x, y = x * widthPadded + self.padding + self.extrude, y * heightPadded + self.padding + self.extrude
           local image = self.images[index]
-          imageData:paste(image, x, y, 0, 0, image:getDimensions())
+          data:paste(image, x, y, 0, 0, image:getDimensions())
           if self.extrude > 0 then
-            util.extrudeWithFill(imageData, image, self.extrude, x, y)
+            util.extrudeWithFill(data, image, self.extrude, x, y)
           end
           self.quads[image.id] = {x+self.extrude, y+self.extrude, width, height}
         end
@@ -92,13 +93,13 @@ fixedSizeTA.bake = function(self)
         end
       end
       lg.pop()
-      local data = canvas:newImageData()
+      data = canvas:newImageData()
       self.image = lg.newImage(data)
       self.image:setFilter(self.filterMin, self.filterMag)
       self._dirty = false
     end
 
-    return self, self.image
+    return self, data
   end
 
   return self
