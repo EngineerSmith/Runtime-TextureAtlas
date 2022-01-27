@@ -60,7 +60,7 @@ fixedSizeTA.bake = function(self)
           if index > maxIndex then
             break
           end
-          local x, y = x * widthPadded + self.padding, y * heightPadded + self.padding
+          local x, y = x * widthPadded + self.padding + self.extrude, y * heightPadded + self.padding + self.extrude
           local image = self.images[index]
           imageData:paste(image, x, y, 0, 0, image:getDimensions())
           if self.extrude > 0 then
