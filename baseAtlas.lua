@@ -40,7 +40,7 @@ baseAtlas._ensureCorrectImage = function(self, image)
   else
     if image:typeOf("ImageData") then
       if lg then
-        return love.graphics.newImage(image)
+        return lg.newImage(image)
       else
         error("Cannot convert ImageData to Image")
       end

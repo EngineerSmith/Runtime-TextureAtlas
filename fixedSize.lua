@@ -8,6 +8,7 @@ local fixedSizeTA = setmetatable({}, baseAtlas)
 fixedSizeTA.__index = fixedSizeTA
 
 local lg = love.graphics
+local newImageData = love.image.newImageData
 local ceil, floor, sqrt = math.ceil, math.sqrt, math.floor
 
 fixedSizeTA.new = function(width, height, padding, extrude, spacing)
@@ -54,7 +55,7 @@ fixedSizeTA.bake = function(self)
     end
 
     if self._pureImageMode then
-      data = love.image.newImageData(widthCanvas, heightCanvas, "rgba8")
+      data = newImageData(widthCanvas, heightCanvas, "rgba8")
       for x=0, columns-1 do
         for y=0, rows-1 do
           local index = (x+y*rows)+1
