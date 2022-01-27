@@ -10,14 +10,13 @@ treeNode.__index = treeNode
 
 local lg = love.graphics
 
-treeNode.new = function(w, h, imageData)
+treeNode.new = function(w, h)
   return setmetatable({
     x = 0,
     y = 0,
     w = w or 0,
     h = h or 0,
     image = nil,
-    imageData = imageData
   }, treeNode)
 end
 
@@ -67,15 +66,15 @@ treeNode.insert = function(self, image, width, height)
   end
 end
 
-treeNode.draw = function(self, quads, width, height, extrude, padding)
+treeNode.draw = function(self, quads, width, height, extrude, padding, imageData)
   if self.image then
     local img = self.image.image
     local iwidth, iheight = util.getImageDimensions(img)
-    if self.imageData then
+    if imageData then
       local x, y = self.x + padding + extrude, self.y + padding + extrude
-      self.imageData:paste(img, x, y, 0, 0, img:getDimensions())
+      imageData:paste(img, x, y, 0, 0, img:getDimensions())
       if extrude > 0 then
-        util.extrudeWithFill(self.imageData, img, extrude, x, y)
+        util.extrudeWithFill(imageData, img, extrude, x, y)
       end
       quads[self.image.id] = {x, y, iwidth, iheight}
     else
@@ -84,8 +83,8 @@ treeNode.draw = function(self, quads, width, height, extrude, padding)
       quads[self.image.id] = lg.newQuad(self.x+extrude+padding, self.y+extrude+padding, iwidth, iheight, width, height)
     end
   elseif self[1] --[[ and self[2] ]] then
-    self[1]:draw(quads, width, height, extrude, padding)
-    self[2]:draw(quads, width, height, extrude, padding)
+    self[1]:draw(quads, width, height, extrude, padding, imageData)
+    self[2]:draw(quads, width, height, extrude, padding, imageData)
   end
 end
 
