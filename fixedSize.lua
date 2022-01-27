@@ -97,9 +97,9 @@ fixedSizeTA.bake = function(self)
       data = canvas:newImageData()
       self.image = lg.newImage(data)
       self.image:setFilter(self.filterMin, self.filterMag)
-      self._dirty = false
     end
 
+    self._dirty = false
     return self, data
   end
 
