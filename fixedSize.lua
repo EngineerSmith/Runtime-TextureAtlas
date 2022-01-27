@@ -62,18 +62,11 @@ fixedSizeTA.bake = function(self)
           end
           local x, y = x * widthPadded + self.padding, y * heightPadded + self.padding
           local image = self.images[index]
-          local iw, ih = image:getDimensions()
-          imageData:paste(image, x, y, 0, 0, iw, ih)
+          imageData:paste(image, x, y, 0, 0, image:getDimensions())
           if self.extrude > 0 then
-            util.extrudeImageData(imageData, image, self.extrude, x, y, 0, -1, 0, 0, iw, 1) -- top
-            util.extrudeImageData(imageData, image, self.extrude, x, y, -1, 0, 0, 0, 1, ih) -- left
-            util.extrudeImageData(imageData, image, self.extrude, x, y + ih - 1, 0, 1, 0, ih - 1, iw, 1) -- bottom
-            util.extrudeImageData(imageData, image, self.extrude, x + iw - 1, y, 1, 0, iw - 1, 0, 1, ih) -- right
-            util.fillImageData(imageData, x - self.extrude - 1, y - self.extrude - 1, self.extrude, self.extrude, image:getPixel(0, 0)) -- top-left
-            util.fillImageData(imageData, x + iw, y - self.extrude - 1, self.extrude, self.extrude, image:getPixel(iw - 1, 0)) -- top-right
-            util.fillImageData(imageData, x + iw, y + ih, self.extrude, self.extrude, image:getPixel(iw - 1, ih - 1)) -- bottom-right
-            util.fillImageData(imageData, x - self.extrude - 1, y + ih, self.extrude, self.extrude, image:getPixel(0, ih - 1)) -- bottom-left
+            util.extrudeWithFill(imageData, image, self.extrude, x, y)
           end
+          self.quads[image.id] = {x+self.extrude, y+self.extrude, width, height}
         end
       end
     else

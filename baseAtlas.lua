@@ -122,7 +122,11 @@ end
 baseAtlas.getViewport = function(self, id)
   local quad = self.quads[id]
   if quad then
-    return quad:getViewport()
+    if self._pureImageMode then
+      return quad[1], quad[2], quad[3], quad[4]
+    else
+      return quad:getViewport()
+    end
   end
   error("Warning! Quad hasn't been baked for id: " .. tostring(id))
 end
