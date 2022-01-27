@@ -1,5 +1,7 @@
 -- Copyright (c) 2021 EngineerSmith
 -- Under the MIT license, see license suppiled with this file
+local path = select(1, ...):match("(.-)[^%.]+$")
+local util = require(path .. "util")
 
 local lg = love.graphics
 
@@ -28,14 +30,6 @@ baseAtlas.new = function(padding, extrude, spacing)
     _dirty = false, -- Marked dirty if image is added or removed,
     _hardBake = false, -- Marked true if hardBake has been called, cannot use add, remove or bake once true
   }, baseAtlas)
-end
-
-baseAtlas._getImageDimensions = function(image)
-  if image:typeOf("Texture") then
-    return image:getPixelDimensions()
-  else
-    return image:getDimensions()
-  end
 end
 
 baseAtlas._ensureCorrectImage = function(self, image)

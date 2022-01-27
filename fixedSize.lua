@@ -3,24 +3,12 @@
 
 local path = select(1, ...):match("(.-)[^%.]+$")
 local baseAtlas = require(path .. "baseAtlas")
+local util = require(path .. "util")
 local fixedSizeTA = setmetatable({}, baseAtlas)
 fixedSizeTA.__index = fixedSizeTA
 
 local lg = love.graphics
 local ceil, floor, sqrt = math.ceil, math.sqrt, math.floor
-
--- TODO: Remove closure usage
-local fillImageData = function(imageData, x, y, w, h, r, g, b, a)
-  imageData:mapPixel(function()
-    return r, g, b, a
-  end, x, y, w, h)
-end
-
-local extrudeImageData = function(dest, src, n, x, y, dx, dy, sx, sy, sw, sh)
-  for i = 1, n do
-    dest:paste(src, x + i * dx, y + i * dy, sx, sy, sw, sh)
-  end
-end
 
 fixedSizeTA.new = function(width, height, padding, extrude, spacing)
   local self = setmetatable(baseAtlas.new(padding, extrude, spacing), fixedSizeTA)
@@ -30,7 +18,7 @@ fixedSizeTA.new = function(width, height, padding, extrude, spacing)
 end
 
 fixedSizeTA.add = function(self, image, id, bake)
-  local width, height = baseAtlas._getImageDimensions(image)
+  local width, height = util.getImageDimensions(image)
   if width ~= self.width or height ~= self.height then
     error("Given image cannot fit into a fixed sized texture atlas\n Gave: W:".. tostring(width) .. " H:" ..tostring(height) .. ", Expected: W:"..self.width.." H:"..self.height)
   end
@@ -77,14 +65,14 @@ fixedSizeTA.bake = function(self)
           local iw, ih = image:getDimensions()
           imageData:paste(image, x, y, 0, 0, iw, ih)
           if self.extrude > 0 then
-            extrudeImageData(imageData, image, self.extrude, x, y, 0, -1, 0, 0, iw, 1) -- top
-            extrudeImageData(imageData, image, self.extrude, x, y, -1, 0, 0, 0, 1, ih) -- left
-            extrudeImageData(imageData, image, self.extrude, x, y + ih - 1, 0, 1, 0, ih - 1, iw, 1) -- bottom
-            extrudeImageData(imageData, image, self.extrude, x + iw - 1, y, 1, 0, iw - 1, 0, 1, ih) -- right
-            fillImageData(imageData, x - self.extrude - 1, y - self.extrude - 1, self.extrude, self.extrude, image:getPixel(0, 0)) -- top-left
-            fillImageData(imageData, x + iw, y - self.extrude - 1, self.extrude, self.extrude, image:getPixel(iw - 1, 0)) -- top-right
-            fillImageData(imageData, x + iw, y + ih, self.extrude, self.extrude, image:getPixel(iw - 1, ih - 1)) -- bottom-right
-            fillImageData(imageData, x - self.extrude - 1, y + ih, self.extrude, self.extrude, image:getPixel(0, ih - 1)) -- bottom-left
+            util.extrudeImageData(imageData, image, self.extrude, x, y, 0, -1, 0, 0, iw, 1) -- top
+            util.extrudeImageData(imageData, image, self.extrude, x, y, -1, 0, 0, 0, 1, ih) -- left
+            util.extrudeImageData(imageData, image, self.extrude, x, y + ih - 1, 0, 1, 0, ih - 1, iw, 1) -- bottom
+            util.extrudeImageData(imageData, image, self.extrude, x + iw - 1, y, 1, 0, iw - 1, 0, 1, ih) -- right
+            util.fillImageData(imageData, x - self.extrude - 1, y - self.extrude - 1, self.extrude, self.extrude, image:getPixel(0, 0)) -- top-left
+            util.fillImageData(imageData, x + iw, y - self.extrude - 1, self.extrude, self.extrude, image:getPixel(iw - 1, 0)) -- top-right
+            util.fillImageData(imageData, x + iw, y + ih, self.extrude, self.extrude, image:getPixel(iw - 1, ih - 1)) -- bottom-right
+            util.fillImageData(imageData, x - self.extrude - 1, y + ih, self.extrude, self.extrude, image:getPixel(0, ih - 1)) -- bottom-left
           end
         end
       end
