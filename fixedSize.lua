@@ -57,6 +57,7 @@ fixedSizeTA.bake = function(self)
     local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
     local maxIndex = self.imagesSize
     lg.push("all")
+    lg.setBlendMode("replace")
     lg.setCanvas(canvas)
     for x=0, columns-1 do
       for y=0, rows-1 do

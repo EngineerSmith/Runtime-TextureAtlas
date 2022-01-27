@@ -75,6 +75,7 @@ dynamicSizeTA.bake = function(self, sortBy)
     
     local canvas = lg.newCanvas(maxWidth, maxHeight, self._canvasSettings)
     lg.push("all")
+    lg.setBlendMode("replace")
     lg.setCanvas(canvas)
     root:draw(self.quads, maxWidth, maxHeight, self.extrude, self.padding)
     lg.pop()
