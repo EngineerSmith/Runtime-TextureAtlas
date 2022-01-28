@@ -1,5 +1,6 @@
+
 # Runtime Texture Atlas (RTA)
-A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on **love 11.3 android**. Works in Love 11.4.
+A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on **love 11.3 android** and **love 11.4 windows**.
 
 There are two types of Texture atlas you have access to:
 
@@ -8,9 +9,11 @@ There are two types of Texture atlas you have access to:
   Uses home-brew algorithm to pack images. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of columns, then optimizes number of rows. (e.g. ceil(sqrt(50))=8, instead of an 8x8= grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row). If you are baking an awful lot of images, and the window is freezing: see advice to solve this issues below.
 
 **Dynamic Size**: *All images can be whatever size they want*
+  Uses a home-brew algorithm to pack images together based on cells. Unit tests show it takes 40% longer to bake than fixed size (This is given due to it being more complex than filling a grid). Check out `packing.lua` to see how they are being packed together. 
 
-  It uses [BlackPawn's lightmap packing algorithm](https://blackpawn.com/texts/lightmaps/default.html) to pack the images together. Unit tests shows it takes 90%-120% longer to bake than fixed size (this is a given due to having to produce a binary tree for sizes verse just throwing them in). Which isn't an issue unless you have 1000+ images on one texture atlas, then it will freeze until baking has been complete. See advice to solve this issues below.
- 
+  Originally RTA used binary tree packing which didn't produced good results. This new packing algorithm is not only (almost) twice as fast but much more better at packing images optimally than the binary tree solution.
+ ### How to run RTA headless
+ If you're looking to run RTA headless, it supports drawing to imageData that is returned from baking. You can find this implemented in the [ETA command line tool](https://github.com/EngineerSmith/Export-TextureAtlas).
 ### Advice: Window Freezing during baking
 
   If your game window is freezing, it is due to the baking process taking too long. Try to avoid baking until the end, and avoid baking over and over unless you need to keep changing the images within the atlas. (If you're doing this to say animate, add all frames and then select the different quads in the draw)
@@ -171,8 +174,8 @@ Baking takes all added images and stitches them together onto a single image. Ba
 ```lua
 fixed:bake()
 dynamic:bake(sortby)
-dynamic:bake("height") 
--- _sortBy options: "height" (default), "area", "width", "none"
+dynamic:bake("area") 
+-- _sortBy options: "area" (default), "height", "width", "none"
 -- "height" and "area" are best from unit testing - but do your own tests to see what works best for your images
 -- use dynamic.image to grab the baked image
 ```
