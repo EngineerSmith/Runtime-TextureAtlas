@@ -31,10 +31,10 @@ util.extrudeWithFill = function(dest, src, n, x, y)
   extrudeImageData(dest, src, n, x, y, -1, 0, 0, 0, 1, ih) -- left
   extrudeImageData(dest, src, n, x, y + ih - 1, 0, 1, 0, ih - 1, iw, 1) -- bottom
   extrudeImageData(dest, src, n, x + iw - 1, y, 1, 0, iw - 1, 0, 1, ih) -- right
-  fillImageData(dest, x - n - 1, y - n - 1, n, n, src:getPixel(0, 0)) -- top-left
-  fillImageData(dest, x + iw, y - n - 1, n, n, src:getPixel(iw - 1, 0)) -- top-right
+  fillImageData(dest, x - n, y - n, n, n, src:getPixel(0, 0)) -- top-left
+  fillImageData(dest, x + iw, y - n, n, n, src:getPixel(iw - 1, 0)) -- top-right
   fillImageData(dest, x + iw, y + ih, n, n, src:getPixel(iw - 1, ih - 1)) -- bottom-right
-  fillImageData(dest, x - n - 1, y + ih, n, n, src:getPixel(0, ih - 1)) -- bottom-left
+  fillImageData(dest, x - n, y + ih, n, n, src:getPixel(0, ih - 1)) -- bottom-left
 end
 
 return util

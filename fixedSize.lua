@@ -64,9 +64,9 @@ fixedSizeTA.bake = function(self)
           end
           local x, y = x * widthPadded + self.padding + self.extrude, y * heightPadded + self.padding + self.extrude
           local image = self.images[index]
-          data:paste(image, x, y, 0, 0, image:getDimensions())
+          data:paste(image.image, x, y, 0, 0, image.image:getDimensions())
           if self.extrude > 0 then
-            util.extrudeWithFill(data, image, self.extrude, x, y)
+            util.extrudeWithFill(data, image.image, self.extrude, x, y)
           end
           self.quads[image.id] = {x+self.extrude, y+self.extrude, width, height}
         end
