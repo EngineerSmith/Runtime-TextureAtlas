@@ -1,6 +1,7 @@
 -- Copyright (c) 2021 EngineerSmith
 -- Under the MIT license, see license suppiled with this file
 local path = select(1, ...):match("(.-)[^%.]+$")
+local util = require(path .. "util")
 local baseAtlas = require(path .. "baseAtlas")
 local dynamicSizeTA = setmetatable({}, baseAtlas)
 dynamicSizeTA.__index = dynamicSizeTA
@@ -9,6 +10,7 @@ dynamicSizeTA.__index = dynamicSizeTA
 local treeNode = require(path .. "treeNode")
 
 local lg = love.graphics
+local newImageData = love.image.newImageData
 local sort = table.sort
 
 dynamicSizeTA.new = function(padding, extrude, spacing)
@@ -16,20 +18,20 @@ dynamicSizeTA.new = function(padding, extrude, spacing)
 end
 
 local area = function(a, b)
-  local aW, aH = a.image:getPixelDimensions()
-  local bW, bH = b.image:getPixelDimensions()
+  local aW, aH = util.getImageDimensions(a.image)
+  local bW, bH = util.getImageDimensions(b.image)
   return aW * aH > bW * bH
 end
 
 local height = function(a, b)
-  local aH = a.image:getPixelHeight()
-  local bH = b.image:getPixelHeight()
+  local aH = select(2, util.getImageDimensions(a.image))
+  local bH = select(2, util.getImageDimensions(b.image))
   return aH > bH
 end
 
 local width = function(a, b)
-  local aW = a.image:getPixelWidth()
-  local bW = b.image:getPixelWidth()
+  local aW = util.getImageDimensions(a.image)
+  local bW = util.getImageDimensions(b.image)
   return aW > bW
 end
 
@@ -37,6 +39,7 @@ end
 dynamicSizeTA.bake = function(self, sortBy)
   if self._dirty and not self._hardBake then
     local shallowCopy = {unpack(self.images)}
+    local data
     if sortBy == nil or sortBy == "height" then
       sort(shallowCopy, height)
     elseif sortBy == "area" then
@@ -44,14 +47,14 @@ dynamicSizeTA.bake = function(self, sortBy)
     elseif sortBy == "width" then
       sort(shallowCopy, width)
     end
-    
+
     -- Calculate positions and size of canvas
     local maxWidth, maxHeight = 0,0
     local root = treeNode.new(self._maxCanvasSize, self._maxCanvasSize)
-    
+
     for _, image in ipairs(shallowCopy) do
       local img = image.image
-      local width, height = img:getPixelDimensions()
+      local width, height = util.getImageDimensions(img)
       width = width + self.spacing + self.extrude * 2 + self.padding * 2
       height = height + self.spacing + self.extrude * 2 + self.padding * 2
       local node = root:insert(image, width, height)
@@ -65,27 +68,34 @@ dynamicSizeTA.bake = function(self, sortBy)
         maxHeight = node.y + height
       end
     end
-    
+
     maxWidth, maxHeight = maxWidth - self.spacing, maxHeight - self.spacing
-    
+
     if self.bakeAsPow2 then
       maxWidth = math.pow(2, math.ceil(math.log(maxWidth)/math.log(2)))
       maxHeight = math.pow(2, math.ceil(math.log(maxHeight)/math.log(2)))
     end
-    
-    local canvas = lg.newCanvas(maxWidth, maxHeight, self._canvasSettings)
-    lg.push("all")
-    lg.setBlendMode("replace")
-    lg.setCanvas(canvas)
-    root:draw(self.quads, maxWidth, maxHeight, self.extrude, self.padding)
-    lg.pop()
-    local data = canvas:newImageData()
-    self.image = lg.newImage(data)
-    self.image:setFilter(self.filterMin, self.filterMag)
+
+    if self._pureImageMode then
+      data = newImageData(maxWidth, maxHeight, "rgba8")
+      root:draw(self.quads, maxWidth, maxHeight, self.extrude, self.padding, data)
+      self.image = data
+    else
+      local canvas = lg.newCanvas(maxWidth, maxHeight, self._canvasSettings)
+      lg.push("all")
+      lg.setBlendMode("replace")
+      lg.setCanvas(canvas)
+      root:draw(self.quads, maxWidth, maxHeight, self.extrude, self.padding)
+      lg.pop()
+      data = canvas:newImageData()
+      self.image = lg.newImage(data)
+      self.image:setFilter(self.filterMin, self.filterMag)
+    end
+
     self._dirty = false
     return self, data
   end
-  
+
   return self
 end
 

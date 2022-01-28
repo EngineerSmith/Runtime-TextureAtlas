@@ -1,5 +1,7 @@
 -- Copyright (c) 2021 EngineerSmith
 -- Under the MIT license, see license suppiled with this file
+local path = select(1, ...):match("(.-)[^%.]+$")
+local util = require(path .. "util")
 
 local lg = love.graphics
 
@@ -7,8 +9,8 @@ local baseAtlas = {
   _canvasSettings = {
     dpiscale = 1,
   },
-  _maxCanvasSize =  lg.getSystemLimits().texturesize - 1,
-  _arrayTextureSupport = lg.getTextureTypes()["array"],
+  _maxCanvasSize = lg and (lg.getSystemLimits().texturesize - 1) or 16384,
+  _arrayTextureSupport = lg and lg.getTextureTypes()["array"],
 }
 baseAtlas.__index = baseAtlas
 
@@ -17,17 +19,44 @@ baseAtlas.new = function(padding, extrude, spacing)
     padding = padding or 1,
     extrude = extrude or 0,
     spacing = spacing or 0,
-    image,
     images = {},
     imagesSize = 0,
     ids = {},
     quads = {},
-    filterMin = "linear", 
+    filterMin = "linear",
     filterMag = "linear",
     bakeAsPow2 = false,
+    _pureImageMode = not lg, -- If this is true, no dependency to love.graphics is needed
     _dirty = false, -- Marked dirty if image is added or removed,
     _hardBake = false, -- Marked true if hardBake has been called, cannot use add, remove or bake once true
   }, baseAtlas)
+end
+
+baseAtlas._ensureCorrectImage = function(self, image)
+  if self._pureImageMode then
+    if image:typeOf("Texture") then
+      error("Cannot convert Texture to ImageData")
+    end
+  else
+    if image:typeOf("ImageData") then
+      if lg then
+        return lg.newImage(image)
+      else
+        error("Cannot convert ImageData to Image")
+      end
+    end
+  end
+  return image
+end
+
+baseAtlas.useImageData = function(self, mode)
+  if (not mode) and (not lg) then
+    error("love.graphics is required for useImageData(false)")
+  end
+  if next(self.images) then
+    error("Cannot change image data mode if there's image in atlas")
+  end
+  self._pureImageMode = not not mode
 end
 
 -- TA:add(img, "foo")
@@ -38,20 +67,21 @@ baseAtlas.add = function(self, image, id, bake, ...)
   end
   self.imagesSize = self.imagesSize + 1
   local index = self.imagesSize
+  local actualImage = self:_ensureCorrectImage(image)
   assert(type(id) ~= "nil", "Must give an id")
   self:remove(id)
   self.images[index] = {
-    image = image,
+    image = actualImage,
     id = id,
     index = index,
   }
   self.ids[id] = index
-  
+
   self._dirty = true
   if bake then
     self:bake(...)
   end
-  
+
   return self
 end
 
@@ -71,7 +101,7 @@ baseAtlas.remove = function(self, id, bake, ...)
       self:bake(...)
     end
   end
-  
+
   return self
 end
 
@@ -92,12 +122,19 @@ end
 baseAtlas.getViewport = function(self, id)
   local quad = self.quads[id]
   if quad then
-    return quad:getViewport()
+    if self._pureImageMode then
+      return quad[1], quad[2], quad[3], quad[4]
+    else
+      return quad:getViewport()
+    end
   end
   error("Warning! Quad hasn't been baked for id: " .. tostring(id))
 end
 
 baseAtlas.setFilter = function(self, min, mag)
+  if self._pureImageMode then
+    error("Warning! This function is unsupported within current image data mode!")
+  end
   self.filterMin = min or "linear"
   self.filterMag = mag or self.filterMin
   if self.image then
@@ -123,10 +160,16 @@ baseAtlas.setSpacing = function(self, spacing)
 end
 
 baseAtlas.draw = function(self, id, ...)
+  if self._pureImageMode then
+    error("Warning! This function is unsupported within current image data mode!")
+  end
   lg.draw(self.image, self.quads[id], ...)
 end
 
 baseAtlas.getDrawFuncForID = function(self, id)
+  if self._pureImageMode then
+    error("Warning! This function is unsupported within current image data mode!")
+  end
   return function(...)
     lg.draw(self.image, self.quads[id], ...)
   end
