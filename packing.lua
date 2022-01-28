@@ -39,21 +39,18 @@ grid.insert = function(self, width, height, data)
       unoccupiedCell.data = data
       remove(self.unoccupiedCells, index)
       insert(self.cells, unoccupiedCell)
-      print("Found empty cell 1", data.id)
       return true
     elseif unoccupiedCell.w == width and unoccupiedCell.h > height then
       insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, unoccupiedCell.w, unoccupiedCell.h-height))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.h, unoccupiedCell.data = height, data
-      insert(self.cells, unoccupiedCell) -- top
-      print("Found empty cell 2", data.id)
+      insert(self.cells, unoccupiedCell)
       return true
     elseif unoccupiedCell.h == height and unoccupiedCell.w > width then
       insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, unoccupiedCell.w-width, unoccupiedCell.h))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.w, unoccupiedCell.data = width, data
       insert(self.cells, unoccupiedCell)
-      print("Found empty cell 3", data.id)
       return true
     elseif unoccupiedCell.w > width and unoccupiedCell.h > height then
       -- split and add
@@ -67,11 +64,9 @@ grid.insert = function(self, width, height, data)
       remove(self.unoccupiedCells, index)
       unoccupiedCell.w, unoccupiedCell.h, unoccupiedCell.data = width, height, data
       insert(self.cells, unoccupiedCell)
-      print("Found empty cell 4", data.id)
       return true
     end
   end
-  print("Could not find empty cell", data.id, #self.unoccupiedCells)
   -- score edge placement
   local overBottom = width - self.currentWidth -- over hang cost
   if overBottom > 0 then

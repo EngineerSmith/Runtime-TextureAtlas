@@ -41,9 +41,9 @@ dynamicSizeTA.bake = function(self, sortBy)
     local shallowCopy = {unpack(self.images)}
     if sortBy == "height" then
       sort(shallowCopy, height)
-    elseif sortBy == "area" then
+    elseif sortBy == "area" or sortBy == nil then
       sort(shallowCopy, area)
-    elseif sortBy == "width" or sortBy == nil then
+    elseif sortBy == "width" then
       sort(shallowCopy, width)
     end
 
