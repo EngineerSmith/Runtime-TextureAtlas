@@ -42,14 +42,14 @@ grid.insert = function(self, width, height, data)
       print("Found empty cell 1", data.id)
       return true
     elseif unoccupiedCell.w == width and unoccupiedCell.h > height then
-      insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, width, height-unoccupiedCell.h))
+      insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, unoccupiedCell.w, unoccupiedCell.h-height))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.h, unoccupiedCell.data = height, data
       insert(self.cells, unoccupiedCell) -- top
       print("Found empty cell 2", data.id)
       return true
     elseif unoccupiedCell.h == height and unoccupiedCell.w > width then
-      insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, width-unoccupiedCell.w, height))
+      insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, unoccupiedCell.w-width, unoccupiedCell.h))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.w, unoccupiedCell.data = width, data
       insert(self.cells, unoccupiedCell)
@@ -57,7 +57,13 @@ grid.insert = function(self, width, height, data)
       return true
     elseif unoccupiedCell.w > width and unoccupiedCell.h > height then
       -- split and add
-      insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y+height, width-unoccupiedCell.w, height-unoccupiedCell.h))
+      if width > height then
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, unoccupiedCell.w-width, height)) -- right
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, unoccupiedCell.w, unoccupiedCell.h-height)) -- bottom
+      else
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, unoccupiedCell.w-width, unoccupiedCell.h)) -- right
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, width, unoccupiedCell.h-height)) -- bottom
+      end
       remove(self.unoccupiedCells, index)
       unoccupiedCell.w, unoccupiedCell.h, unoccupiedCell.data = width, height, data
       insert(self.cells, unoccupiedCell)
@@ -91,17 +97,17 @@ grid.insert = function(self, width, height, data)
   -- add best new cells
   if bottomScore < rightScore then -- place bottom
     insert(self.cells, cell.new(0, self.currentHeight, width, height, data))
-    if width < self.currentWidth then
-      insert(self.unoccupiedCells, cell.new(width, self.currentHeight, width-self.currentWidth, height))
-    else
+    if self.currentWidth > width then
+      insert(self.unoccupiedCells, cell.new(width, self.currentHeight, self.currentWidth-width, height))
+    elseif self.currentWidth < width then
       self.currentWidth = width
     end
     self.currentHeight = self.currentHeight + height
   else -- place right
     insert(self.cells, cell.new(self.currentWidth, 0, width, height, data))
-    if height < self.currentHeight then
-      insert(self.unoccupiedCells, cell.new(self.currentWidth, height, width, height-self.currentHeight))
-    else
+    if self.currentHeight > height then
+      insert(self.unoccupiedCells, cell.new(self.currentWidth, height, width, self.currentHeight-height))
+    elseif self.currentHeight < height then
       self.currentHeight = height
     end
     self.currentWidth = self.currentWidth + width
@@ -123,11 +129,6 @@ grid.draw = function(self, quads, width, height, extrude, padding, imageData)
       quads[cell.data.id] = {x, y, iwidth, iheight}
     else
       local extrudeQuad = lg.newQuad(-extrude, -extrude, iwidth+extrude*2, iheight+extrude*2, iwidth, iheight)
-      if true then
-        lg.setColor(1,0,1)
-        lg.rectangle("line", cell.x, cell.y, cell.w, cell.h)
-        lg.setColor(1,1,1)
-      end
       lg.draw(image, extrudeQuad, cell.x+padding, cell.y+padding)
       quads[cell.data.id] = lg.newQuad(cell.x+extrude+padding, cell.y+extrude+padding, iwidth, iheight, width, height)
     end
