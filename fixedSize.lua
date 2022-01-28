@@ -58,7 +58,7 @@ fixedSizeTA.bake = function(self)
       data = newImageData(widthCanvas, heightCanvas, "rgba8")
       for x=0, columns-1 do
         for y=0, rows-1 do
-          local index = (x+y*rows)+1
+          local index = (x*rows+y)+1
           if index > maxIndex then
             break
           end
@@ -83,7 +83,7 @@ fixedSizeTA.bake = function(self)
       lg.setCanvas(canvas)
       for x=0, columns-1 do
         for y=0, rows-1 do
-          local index = (x+y*rows)+1
+          local index = (x*rows+y)+1
           if index > maxIndex then
             break
           end
