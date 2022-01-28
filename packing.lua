@@ -12,9 +12,9 @@ local insert, remove = table.insert, table.remove
 local cell = {}
 cell.__index = {}
 
-cell.new = function(x, y, z, w, data)
+cell.new = function(x, y, w, h, data)
   return setmetatable({
-      x = x, y = y, z = z, w = w,
+      x = x, y = y, w= w, h = h,
       data = data,
     }, cell)
 end
@@ -39,28 +39,33 @@ grid.insert = function(self, width, height, data)
       unoccupiedCell.data = data
       remove(self.unoccupiedCells, index)
       insert(self.cells, unoccupiedCell)
+      print("Found empty cell 1", data.id)
       return true
-    elseif cell.w == width and cell.h > height then
+    elseif unoccupiedCell.w == width and unoccupiedCell.h > height then
       insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, width, height-unoccupiedCell.h))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.h, unoccupiedCell.data = height, data
       insert(self.cells, unoccupiedCell) -- top
+      print("Found empty cell 2", data.id)
       return true
-    elseif cell.h == height and cell.w > width then
+    elseif unoccupiedCell.h == height and unoccupiedCell.w > width then
       insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, width-unoccupiedCell.w, height))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.w, unoccupiedCell.data = width, data
       insert(self.cells, unoccupiedCell)
+      print("Found empty cell 3", data.id)
       return true
-    elseif cell.w > width and cell.h > height then
+    elseif unoccupiedCell.w > width and unoccupiedCell.h > height then
       -- split and add
       insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y+height, width-unoccupiedCell.w, height-unoccupiedCell.h))
       remove(self.unoccupiedCells, index)
       unoccupiedCell.w, unoccupiedCell.h, unoccupiedCell.data = width, height, data
       insert(self.cells, unoccupiedCell)
+      print("Found empty cell 4", data.id)
       return true
     end
   end
+  print("Could not find empty cell", data.id, #self.unoccupiedCells)
   -- score edge placement
   local overBottom = width - self.currentWidth -- over hang cost
   if overBottom > 0 then
@@ -76,17 +81,28 @@ grid.insert = function(self, width, height, data)
     overRight = 0
   end
   local rightScore = height * width + overRight
+  if bottomScore == rightScore then
+    if width > height then
+      rightScore = bottomScore + 1
+    else
+      bottomScore = rightScore + 1
+    end
+  end
   -- add best new cells
   if bottomScore < rightScore then -- place bottom
     insert(self.cells, cell.new(0, self.currentHeight, width, height, data))
     if width < self.currentWidth then
       insert(self.unoccupiedCells, cell.new(width, self.currentHeight, width-self.currentWidth, height))
+    else
+      self.currentWidth = width
     end
     self.currentHeight = self.currentHeight + height
   else -- place right
     insert(self.cells, cell.new(self.currentWidth, 0, width, height, data))
     if height < self.currentHeight then
       insert(self.unoccupiedCells, cell.new(self.currentWidth, height, width, height-self.currentHeight))
+    else
+      self.currentHeight = height
     end
     self.currentWidth = self.currentWidth + width
   end
@@ -107,6 +123,11 @@ grid.draw = function(self, quads, width, height, extrude, padding, imageData)
       quads[cell.data.id] = {x, y, iwidth, iheight}
     else
       local extrudeQuad = lg.newQuad(-extrude, -extrude, iwidth+extrude*2, iheight+extrude*2, iwidth, iheight)
+      if true then
+        lg.setColor(1,0,1)
+        lg.rectangle("line", cell.x, cell.y, cell.w, cell.h)
+        lg.setColor(1,1,1)
+      end
       lg.draw(image, extrudeQuad, cell.x+padding, cell.y+padding)
       quads[cell.data.id] = lg.newQuad(cell.x+extrude+padding, cell.y+extrude+padding, iwidth, iheight, width, height)
     end

@@ -39,11 +39,11 @@ end
 dynamicSizeTA.bake = function(self, sortBy)
   if self._dirty and not self._hardBake then
     local shallowCopy = {unpack(self.images)}
-    if sortBy == nil or sortBy == "height" then
+    if sortBy == "height" then
       sort(shallowCopy, height)
     elseif sortBy == "area" then
       sort(shallowCopy, area)
-    elseif sortBy == "width" then
+    elseif sortBy == "width" or sortBy == nil then
       sort(shallowCopy, width)
     end
 
@@ -61,7 +61,7 @@ dynamicSizeTA.bake = function(self, sortBy)
       end
     end
     local maxWidth, maxHeight = grid.currentWidth - self.spacing, grid.currentHeight - self.spacing
-
+    
     if self.bakeAsPow2 then
       maxWidth = math.pow(2, math.ceil(math.log(maxWidth)/math.log(2)))
       maxHeight = math.pow(2, math.ceil(math.log(maxHeight)/math.log(2)))
