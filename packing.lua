@@ -89,6 +89,16 @@ grid.insert = function(self, width, height, data)
       bottomScore = rightScore + 1
     end
   end
+  
+  -- limits
+  local limitWidth = self.currentWidth + width > self.limitWidth
+  local limitHeight = self.currentHeight + height > self.limitHeight
+  if limitHeight and limitWidth then
+    error("Could not fit all images within texture atlas")
+  elseif limitHeight or limitWidth then
+    
+  end
+  
   -- add best new cells
   if bottomScore < rightScore then -- place bottom
     insert(self.cells, cell.new(0, self.currentHeight, width, height, data))
