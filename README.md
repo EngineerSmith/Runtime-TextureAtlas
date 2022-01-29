@@ -1,12 +1,15 @@
 
+
 # Runtime Texture Atlas (RTA)
-A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on **love 11.3 android** and **love 11.4 windows**.
+A Love2D runtime texture atlas designed to be easy to use and memory optimized. Creates texture atlas when loading than having to use an external tool to create an atlas. Tested and written on **love 11.3 Android** and **love 11.4 Windows**.
 
 There are two types of Texture atlas you have access to:
 
 **Fixed Size**: *All images must have the same width and height*
 
   Uses home-brew algorithm to pack images. Estimates size of the canvas with ceil(sqrt(numOfImages)) for the number of columns, then optimizes number of rows. (e.g. ceil(sqrt(50))=8, instead of an 8x8= grid for the atlas, it'll use 8x7 grid to avoid wasting the extra row). If you are baking an awful lot of images, and the window is freezing: see advice to solve this issues below.
+
+**Note, due to algorithm constraints if it cannot get the size it requires it will throw an error.** This is due to the algorithm having no wiggly room to rearrange itself. This will unlikely be an issue unless you're forcing it to fit within a rectangle.
 
 **Dynamic Size**: *All images can be whatever size they want*
   Uses a home-brew algorithm to pack images together based on cells. Unit tests show it takes 40% longer to bake than fixed size (This is given due to it being more complex than filling a grid). Check out `packing.lua` to see how they are being packed together. 
@@ -117,6 +120,10 @@ Similar to `image:setFilter`; however, will always override default filter even 
 ta:setFilter(min, mag = min)
 ta:setFilter("nearest")
 ```
+### textureAtlas:useImageData(boolean = false)
+Change mode for the texture atlas to use `ImageData` instead of `love.graphics`. By default if `love.graphics` isn't loaded when `textureAtlas.new` is called, it will use `imageData` mode automatically.
+
+**You cannot change this setting after adding images to the texture atlas!**
 ### textureAtlas:setBakeAsPow2(boolean = false)
 Will round the atlas width and height to their nearest power of 2 value. Do note that the packing algorithms are not optimized for spacing towards the closest power of 2, and you may be left with a lot of empty space. This function doesn't re-bake the atlas, and can be called after hard bake function has been ran, but it will not do anything. This function is useful for those who want to export an atlas as an external resource as some old graphics cards and old smartphones requires textures to be power of 2 and can (in some cases) increase performance minimally. 
 ```lua
@@ -140,6 +147,15 @@ Sets spacing between each image, doesn't add spacing between images and the edge
 ```lua
 ta:setSpacing(1)
 ta:setSpacing(3)
+```
+### textureAtlas:setMaxSize(width=systemMax, height=systemMax)
+Set the maximum size for the texture atlas. Default is system limits, unless `love.graphics` isn't available (i.e. headless mode) then the default limit is 16,384.
+
+Due to constraints of `fixedSize`'s packing algorithm, if it cannot have the size it wants, it will throw an error. It cannot rearrange itself to fit in a restricted area.
+```lua
+ta:setMaxSize(1000, 1000)
+ta:setMaxSize(100) -- height will default to baseAtlas._maxCanvasSize
+ta:setMaxSize(nil, 100) -- width will default to baseAtlas._maxCanvasSize
 ```
 ### textureAtlas:add(image, id, bake = false, ...)
 Add or replace an image to your atlas. Use the 3rd argument to bake the addition. Recommended to only bake once all changes have been made - useful for updating one image. 4th argument is passed to `textureAtlas.bake`

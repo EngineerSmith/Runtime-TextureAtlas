@@ -48,17 +48,14 @@ dynamicSizeTA.bake = function(self, sortBy)
     end
 
     -- Calculate positions and size of canvas
-    local grid = grid.new(self._maxCanvasSize, self._maxCanvasSize)
+    local grid = grid.new(self.maxWidth or self._maxCanvasSize, self.maxHeight or self._maxCanvasSize)
 
     for _, image in ipairs(shallowCopy) do
       local img = image.image
       local width, height = util.getImageDimensions(img)
       width = width + self.spacing + self.extrude * 2 + self.padding * 2
       height = height + self.spacing + self.extrude * 2 + self.padding * 2
-      local success = grid:insert(width, height, image)
-      if not success then
-        error("Could not fit image inside tree")
-      end
+      grid:insert(width, height, image) -- will always be successful or will error
     end
     local maxWidth, maxHeight = grid.currentWidth - self.spacing, grid.currentHeight - self.spacing
     

@@ -34,26 +34,24 @@ fixedSizeTA.bake = function(self)
     local heightPadded = height + self.spacing + self.extrude * 2 + self.padding * 2
     local maxIndex = self.imagesSize
     local data
-
+    
     local widthCanvas = columns * widthPadded
-    if widthCanvas > self._maxCanvasSize then
-      columns = floor(self._maxCanvasSize / width)
-      widthCanvas = columns * widthPadded
+    if widthCanvas > (self.maxWidth or self._maxCanvasSize) then
+      error("Required width for atlas cannot be created due to reaching limits. Required: "..widthCanvas..", width limit: "..(self.maxWidth or self._maxCanvasSize))
     end
-
+    
     local rows = ceil(self.imagesSize / columns)
     local heightCanvas = rows * heightPadded
-    if heightPadded > self._maxCanvasSize then
-      rows = floor(self._maxCanvasSize / height)
-      heightCanvas = rows * heightPadded
+    if heightPadded > (self.maxHeight or self._maxCanvasSize) then
+      error("Required height for atlas cannot be created due to reaching limits. Required: "..heightCanvas..", height limit: "..(self.maxHeight or self._maxCanvasSize))
     end
-
+    
     widthCanvas, heightCanvas = widthCanvas - self.spacing, heightCanvas - self.spacing
     if self.bakeAsPow2 then
       widthCanvas = math.pow(2, math.ceil(math.log(widthCanvas)/math.log(2)))
       heightCanvas = math.pow(2, math.ceil(math.log(heightCanvas)/math.log(2)))
     end
-
+    
     if self._pureImageMode then
       data = newImageData(widthCanvas, heightCanvas, "rgba8")
       for x=0, columns-1 do
@@ -72,10 +70,6 @@ fixedSizeTA.bake = function(self)
         end
       end
     else
-      if columns * rows < self.imagesSize then
-        error("Cannot support "..tostring(self.imagesSize).." images, due to system limits of canvas size. Max allowed on this system: "..tostring(columns * rows))
-      end
-
       local extrudeQuad = lg.newQuad(-self.extrude, -self.extrude, width+self.extrude*2, height+self.extrude*2, self.width, self.height)
       local canvas = lg.newCanvas(widthCanvas, heightCanvas, self._canvasSettings)
       lg.push("all")

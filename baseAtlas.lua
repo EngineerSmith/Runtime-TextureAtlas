@@ -10,7 +10,6 @@ local baseAtlas = {
     dpiscale = 1,
   },
   _maxCanvasSize = lg and (lg.getSystemLimits().texturesize - 1) or 16384,
-  _arrayTextureSupport = lg and lg.getTextureTypes()["array"],
 }
 baseAtlas.__index = baseAtlas
 
@@ -57,6 +56,7 @@ baseAtlas.useImageData = function(self, mode)
     error("Cannot change image data mode if there's image in atlas")
   end
   self._pureImageMode = not not mode
+  return self
 end
 
 -- TA:add(img, "foo")
@@ -145,18 +145,28 @@ end
 
 baseAtlas.setBakeAsPow2 = function(self, bakeAsPow2)
   self.bakeAsPow2 = bakeAsPow2 or false
+  return self
 end
 
 baseAtlas.setPadding = function(self, padding)
   self.padding = padding or 1
+  return self
 end
 
 baseAtlas.setExtrude = function(self, extrude)
   self.extrude = extrude or 0
+  return self
 end
 
 baseAtlas.setSpacing = function(self, spacing)
   self.spacing = spacing or 0
+  return self
+end
+
+baseAtlas.setMaxSize = function(self, width, height)
+  self.maxWidth = width or baseAtlas._maxCanvasSize
+  self.maxHeight = height or baseAtlas._maxCanvasSize
+  return self
 end
 
 baseAtlas.draw = function(self, id, ...)
