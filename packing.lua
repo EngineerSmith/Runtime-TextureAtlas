@@ -89,7 +89,7 @@ grid.insert = function(self, width, height, data)
   else
     overBottom = 0
   end
-  local bottomScore = height * width + overBottom
+  local bottomScore = height * (width > self.currentWidth and width or self.currentWidth) + overBottom
   
   local overRight = height - self.currentHeight -- over hang cost
   if overRight > 0 then
@@ -97,7 +97,7 @@ grid.insert = function(self, width, height, data)
   else
     overRight = 0
   end
-  local rightScore = height * width + overRight
+  local rightScore = (height > self.currentHeight and height or self.currentHeight) * width + overRight
   
   -- Pick a direction to lean if scores are equal
   if bottomScore == rightScore then
@@ -127,6 +127,7 @@ grid.insert = function(self, width, height, data)
       -- create cell to fit gap between new cell height and current height
       insert(self.unoccupiedCells, cell.new(width, self.currentHeight, self.currentWidth-width, height))
     elseif self.currentWidth < width then
+      insert(self.unoccupiedCells, cell.new(self.currentWidth, 0, width-self.currentWidth, self.currentWidth))
       self.currentWidth = width
     end
     self.currentHeight = self.currentHeight + height
@@ -136,6 +137,7 @@ grid.insert = function(self, width, height, data)
       -- create cell to fit gap between new cell width and current width
       insert(self.unoccupiedCells, cell.new(self.currentWidth, height, width, self.currentHeight-height))
     elseif self.currentHeight < height then
+      insert(self.unoccupiedCells, cell.new(0, self.currentHeight, self.currentWidth, height-self.currentHeight))
       self.currentHeight = height
     end
     self.currentWidth = self.currentWidth + width
