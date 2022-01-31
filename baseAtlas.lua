@@ -56,6 +56,7 @@ baseAtlas.useImageData = function(self, mode)
     error("Cannot change image data mode if there's image in atlas")
   end
   self._pureImageMode = not not mode
+  self._dirty = true
   return self
 end
 
@@ -140,32 +141,38 @@ baseAtlas.setFilter = function(self, min, mag)
   if self.image then
     self.image:setFilter(self.filterMin, self.filterMag)
   end
+  self._dirty = true
   return self
 end
 
 baseAtlas.setBakeAsPow2 = function(self, bakeAsPow2)
   self.bakeAsPow2 = bakeAsPow2 or false
+  self._dirty = true
   return self
 end
 
 baseAtlas.setPadding = function(self, padding)
   self.padding = padding or 1
+  self._dirty = true
   return self
 end
 
 baseAtlas.setExtrude = function(self, extrude)
   self.extrude = extrude or 0
+  self._dirty = true
   return self
 end
 
 baseAtlas.setSpacing = function(self, spacing)
   self.spacing = spacing or 0
+  self._dirty = true
   return self
 end
 
 baseAtlas.setMaxSize = function(self, width, height)
   self.maxWidth = width or baseAtlas._maxCanvasSize
   self.maxHeight = height or baseAtlas._maxCanvasSize
+  self._dirty = true
   return self
 end
 

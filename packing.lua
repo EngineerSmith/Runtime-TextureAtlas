@@ -42,6 +42,9 @@ grid.insert = function(self, width, height, data)
     return false
   end
   
+  -- find edge cells for later
+  local edgeCells = {}
+  
   -- check if there are any unoccupied cells available for placement
   for index, unoccupiedCell in ipairs(self.unoccupiedCells) do
     -- perfect fit
@@ -79,25 +82,113 @@ grid.insert = function(self, width, height, data)
       remove(self.unoccupiedCells, index)
       return true
     end
+    local edgeRight  = unoccupiedCell.x + unoccupiedCell.w == self.currentWidth
+    local edgeBottom = unoccupiedCell.y + unoccupiedCell.h == self.currentHeight
+    -- Add cells we can use to the list
+    if (edgeRight and unoccupiedCell.h >= height) or (edgeBottom and unoccupiedCell.w >= width) or (edgeRight and edgeBottom) then
+      insert(edgeCells, { unoccupiedCell, right=edgeRight, bottom=edgeBottom, index = index})
+    end
   end
   -- no unoccupied cells suitable, create new cell
   
   -- score edge placement to find cheapest grow cost
-  local overBottom = width - self.currentWidth -- over hang cost
-  if overBottom > 0 then
-    overBottom = self.currentHeight * overBottom
+  local overhangBottom = width - self.currentWidth -- over hang cost
+  if overhangBottom > 0 then
+    overhangBottom = self.currentHeight * overhangBottom
   else
-    overBottom = 0
+    overhangBottom = 0
   end
-  local bottomScore = height * (width > self.currentWidth and width or self.currentWidth) + overBottom
+  local bottomScore = height * (width > self.currentWidth and width or self.currentWidth) + overhangBottom
   
-  local overRight = height - self.currentHeight -- over hang cost
-  if overRight > 0 then
-    overRight = self.currentHeight * overRight
+  local overhangRight = height - self.currentHeight -- over hang cost
+  if overhangRight > 0 then
+    overhangRight = self.currentHeight * overhangRight
   else
-    overRight = 0
+    overhangRight = 0
   end
-  local rightScore = (height > self.currentHeight and height or self.currentHeight) * width + overRight
+  local rightScore = (height > self.currentHeight and height or self.currentHeight) * width + overhangRight
+  
+  -- Score trying to be placed slightly within an edge cell
+  local edgeScore, celledgeTbl = math.huge, nil
+  for _, edgeTable in ipairs(edgeCells) do
+    local cell = edgeTable[1]
+    if overhangRight == 0 and edgeTable.right then -- if over hang, don't handle it here
+      local newWidth = width - cell.w
+      -- limits
+      if self.currentWidth + newWidth > self.limitWidth then
+        goto continue -- cannot fit here
+      end
+      local score = self.currentHeight * newWidth
+      if edgeScore > score then
+        edgeScore = score
+        celledgeTbl = edgeTable
+      end
+    elseif overhangBottom == 0 and edgeTable.bottom then
+      local newHeight = height - cell.h
+      -- limits
+      if self.currentHeight + newHeight > self.limitHeight then
+        goto continue
+      end
+      local score = self.currentWidth * newHeight
+      if edgeScore > score then
+        edgeScore = score
+        celledgeTbl = edgeTable
+      end
+    -- this case includes over hang
+    elseif edgeTable.right and edgeTable.bottom and overhangRight > 0 and overhangBottom > 0 then -- corner
+      -- limits
+      if self.currentWidth  + (width  - cell.w) > self.limitWidth or 
+         self.currentHeight + (height - cell.h) > self.limitHeight then
+        goto continue
+      end
+      local totalArea = (width * height) - (cell.w * cell.h) -- cut out cell
+      local overhangBottom = (cell.h - height) * cell.x -- everything passed X/Y is within totalArea
+      local overhangRight  = (cell.w - width ) * cell.y
+      local score = overhangBottom + overhangRight + totalArea
+      if edgeScore > score then
+        edgeScore = score
+        celledgeTbl = edgeTable
+      end
+    end
+    ::continue::
+  end
+  
+  -- Check cheapest direction
+  if edgeScore < rightScore and edgeScore < bottomScore then
+    -- edge is cheapest
+    local unoccupiedCell = celledgeTbl[1]
+    local oldWidth = self.currentWidth
+    -- split cell
+    if celledgeTbl.right and width - unoccupiedCell.w > 0 then
+      if unoccupiedCell.y ~= 0 then
+        insert(self.unoccupiedCells, cell.new(self.currentWidth, 0, width-unoccupiedCell.w, unoccupiedCell.y))
+      end
+      if unoccupiedCell.h > height then
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x, unoccupiedCell.y+height, width, unoccupiedCell.h-height))
+      end
+      if unoccupiedCell.y + unoccupiedCell.h < self.currentHeight then
+        insert(self.unoccupiedCells, cell.new(self.currentWidth, unoccupiedCell.y+unoccupiedCell.h, width-unoccupiedCell.w, self.currentHeight-(unoccupiedCell.y+unoccupiedCell.h), {0,0,1}))
+      end
+      self.currentWidth = self.currentWidth + width - unoccupiedCell.w 
+    end
+    if celledgeTbl.bottom and height - unoccupiedCell.h > 0 then
+      if unoccupiedCell.x ~= 0 then
+        insert(self.unoccupiedCells, cell.new(0, self.currentHeight, unoccupiedCell.x, height-unoccupiedCell.h))
+      end
+      if unoccupiedCell.w > width then
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+width, unoccupiedCell.y, unoccupiedCell.w-width, height))
+      end
+      if unoccupiedCell.x + unoccupiedCell.w < oldWidth then
+        insert(self.unoccupiedCells, cell.new(unoccupiedCell.x+unoccupiedCell.w, self.currentHeight, oldWidth-(unoccupiedCell.x+unoccupiedCell.w), height-unoccupiedCell.h))
+      end
+      self.currentHeight = self.currentHeight + height - unoccupiedCell.h
+    end
+    -- add image to cell
+    unoccupiedCell.w, unoccupiedCell.h, unoccupiedCell.data = width, height, data
+    insert(self.cells, unoccupiedCell)
+    remove(self.unoccupiedCells, celledgeTbl.index)
+    return true
+  end
   
   -- Pick a direction to lean if scores are equal
   if bottomScore == rightScore then
@@ -151,6 +242,10 @@ grid.insert = function(self, width, height, data)
     -- save time: Only call merge if unoccupied cells are created
     
   return true
+end
+
+grid.mergeCells = function(self)
+  
 end
 
 grid.draw = function(self, quads, width, height, extrude, padding, imageData)
