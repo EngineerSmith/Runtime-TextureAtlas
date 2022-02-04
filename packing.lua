@@ -113,17 +113,21 @@ grid.insert = function(self, width, height, data)
   local edgeScore, celledgeTbl = math.huge, nil
   for _, edgeTable in ipairs(edgeCells) do
     local cell = edgeTable[1]
-    if overhangRight == 0 and edgeTable.right then -- if over hang, don't handle it here
+    if edgeTable.right and edgeTable.bottom and overhangRight > 0 and overhangBottom > 0 then -- corner
       -- limits
-      if cell.x + width > self.limitWidth or
-        (edgeTable.bottom and cell.y + height > self.limitHeight) then
-        goto continue -- cannot fit here
+      if cell.x + width > self.limitWidth or 
+         cell.y + height > self.limitHeight then
+        goto continue
       end
-      local score = self.currentHeight * (width - cell.w)
+      local totalArea = (width * height) - (cell.w * cell.h) -- cut out cell
+      local overhangBottom = (cell.h - height) * cell.x -- everything passed X/Y is within totalArea
+      local overhangRight  = (cell.w - width ) * cell.y
+      local score = overhangBottom + overhangRight + totalArea
       if edgeScore > score then
         edgeScore = score
         celledgeTbl = edgeTable
       end
+    
     elseif overhangBottom == 0 and edgeTable.bottom then
       -- limits
       if cell.y + height > self.limitHeight or
@@ -136,16 +140,13 @@ grid.insert = function(self, width, height, data)
         celledgeTbl = edgeTable
       end
     -- this case includes over hang
-    elseif edgeTable.right and edgeTable.bottom and overhangRight > 0 and overhangBottom > 0 then -- corner
+    elseif overhangRight == 0 and edgeTable.right then -- if over hang, don't handle it here
       -- limits
-      if cell.x + width > self.limitWidth or 
-         cell.y + height > self.limitHeight then
-        goto continue
+      if cell.x + width > self.limitWidth or
+        (edgeTable.bottom and cell.y + height > self.limitHeight) then
+        goto continue -- cannot fit here
       end
-      local totalArea = (width * height) - (cell.w * cell.h) -- cut out cell
-      local overhangBottom = (cell.h - height) * cell.x -- everything passed X/Y is within totalArea
-      local overhangRight  = (cell.w - width ) * cell.y
-      local score = overhangBottom + overhangRight + totalArea
+      local score = self.currentHeight * (width - cell.w)
       if edgeScore > score then
         edgeScore = score
         celledgeTbl = edgeTable
