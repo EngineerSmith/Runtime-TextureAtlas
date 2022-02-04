@@ -139,7 +139,6 @@ grid.insert = function(self, width, height, data)
         edgeScore = score
         celledgeTbl = edgeTable
       end
-    -- this case includes over hang
     elseif overhangRight == 0 and edgeTable.right then -- if over hang, don't handle it here
       -- limits
       if cell.x + width > self.limitWidth or
