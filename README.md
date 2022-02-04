@@ -211,13 +211,6 @@ Draw the given id, with the given variables. Varargs passed to `love.graphics.dr
 ta:draw("cat")
 ta:draw("bird", 50,50, 0, 5,5) -- draw id "bird" at 50,50 at scale 5
 ```
-### textureAtlas:getDrawFunc()
-Get a draw function to avoid passing given texture atlas around
-```lua
-local draw = ta:getDrawFunc()
--- draw(id, ...) -- See textureAtlas:draw(id, ...)
-draw("duck", 50,50, 0, 5,5) -- draws id "duck" at 50,50 at scale 5
-```
 ### textureAtlas:getDrawFuncForID(id)
 Get a draw function to avoid passing given texture atlas and id around
 ```lua
