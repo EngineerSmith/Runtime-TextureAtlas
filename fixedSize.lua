@@ -88,7 +88,12 @@ fixedSizeTA.bake = function(self)
         end
       end
       lg.pop()
-      data = canvas:newImageData()
+      local major = love.getVersion()
+      if major == 12 and lg.readbackTexture then
+        data = lg.readbackTexture(canvas)
+      else
+        data = canvas:newImageData()
+      end
       self.image = lg.newImage(data)
       self.image:setFilter(self.filterMin, self.filterMag)
     end
