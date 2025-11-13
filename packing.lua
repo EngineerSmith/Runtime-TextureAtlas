@@ -103,7 +103,7 @@ grid.insert = function(self, width, height, data)
   
   local overhangRight = height - self.currentHeight -- over hang cost
   if overhangRight > 0 then
-    overhangRight = self.currentHeight * overhangRight
+    overhangRight = self.currentWidth * overhangRight
   else
     overhangRight = 0
   end
@@ -218,7 +218,7 @@ grid.insert = function(self, width, height, data)
       -- create cell to fit gap between new cell height and current height
       insert(self.unoccupiedCells, cell.new(width, self.currentHeight, self.currentWidth-width, height))
     elseif self.currentWidth < width then
-      insert(self.unoccupiedCells, cell.new(self.currentWidth, 0, width-self.currentWidth, self.currentWidth))
+      insert(self.unoccupiedCells, cell.new(self.currentWidth, 0, width-self.currentWidth, self.currentHeight))
       self.currentWidth = width
     end
     self.currentHeight = self.currentHeight + height
